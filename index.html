@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>English Diagnostic Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: an exam booklet — one narrow column of numbered questions on a sheet; the teacher report widens into a scannable diagnostic. */
+:root {
+  --paper: #EEF0EB;
+  --sheet: #FFFFFF;
+  --ink: #17202B;
+  --muted: #5A6470;
+  --rule: #D8DCD3;
+  --accent: #2443C4;
+  --accent-soft: #E7ECFC;
+  --mark: #FFE36E;
+  --good: #23784D; --good-soft: #E1F2E8;
+  --warn: #9A6500; --warn-soft: #FBEFD3;
+  --bad: #B3302F; --bad-soft: #FBE3E1;
+  --f-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #101419; --sheet: #182029; --ink: #E6E9ED; --muted: #9AA4AF; --rule: #2B3542;
+    --accent: #8FA6FF; --accent-soft: #212B48; --mark: #5E4F12;
+    --good: #63C892; --good-soft: #17301F; --warn: #E6B54A; --warn-soft: #33290F; --bad: #F08482; --bad-soft: #3A1B1B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #101419; --sheet: #182029; --ink: #E6E9ED; --muted: #9AA4AF; --rule: #2B3542;
+  --accent: #8FA6FF; --accent-soft: #212B48; --mark: #5E4F12;
+  --good: #63C892; --good-soft: #17301F; --warn: #E6B54A; --warn-soft: #33290F; --bad: #F08482; --bad-soft: #3A1B1B;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 500; text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: 2.3rem; letter-spacing: -0.01em; }
+h2 { font-size: 1.55rem; }
+h3 { font-size: 1.15rem; }
+p { margin: 0; }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 860px; margin: 0 auto; padding: 28px 18px 80px; display: flex; flex-direction: column; gap: 22px; }
+.wrap.wide { max-width: 1120px; }
+.sheet { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.eyebrow { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: 0.875rem; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.spread { justify-content: space-between; }
+.btn { appearance: none; border: 1px solid var(--rule); background: var(--sheet); border-radius: 8px; padding: 10px 16px; cursor: pointer; font-weight: 500; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--sheet); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; }
+.btn.small { padding: 6px 10px; font-size: 0.85rem; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.link { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+input[type=text], textarea { width: 100%; background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px; }
+textarea { resize: vertical; line-height: 1.6; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-mono); font-size: 0.72rem; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--rule); color: var(--muted); white-space: nowrap; }
+.pill.good { color: var(--good); background: var(--good-soft); border-color: transparent; }
+.pill.warn { color: var(--warn); background: var(--warn-soft); border-color: transparent; }
+.pill.bad { color: var(--bad); background: var(--bad-soft); border-color: transparent; }
+.pill.acc { color: var(--accent); background: var(--accent-soft); border-color: transparent; }
+.notice { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 14px; border-radius: 6px; }
+.notice.warn { border-color: var(--warn); background: var(--warn-soft); }
+
+/* Home */
+.hero { display: flex; flex-direction: column; gap: 10px; padding: 10px 0 4px; }
+.hero p { max-width: 60ch; color: var(--muted); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.card { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.card ol { margin: 0; padding-left: 20px; color: var(--muted); font-size: 0.92rem; }
+.card .grow { flex: 1; }
+
+/* Test */
+.topbar { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--rule); }
+.topbar .inner { max-width: 1120px; margin: 0 auto; padding: 10px 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.tab { border: 1px solid var(--rule); background: var(--sheet); border-radius: 7px; padding: 5px 10px; font-size: 0.84rem; cursor: pointer; display: flex; gap: 6px; align-items: center; }
+.tab[aria-current="true"] { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.tab .cnt { font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); }
+.timer { font-family: var(--f-mono); font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.timer.over { color: var(--warn); }
+.items { display: flex; flex-direction: column; gap: 0; }
+.item { padding: 18px 0; border-top: 1px solid var(--rule); display: flex; flex-direction: column; gap: 10px; scroll-margin-top: 80px; }
+.item:first-child { border-top: 0; padding-top: 4px; }
+.qhead { display: flex; gap: 12px; align-items: baseline; }
+.qnum { font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); min-width: 2.2em; font-variant-numeric: tabular-nums; }
+.qtext { font-size: 1.04rem; }
+.blank { display: inline-block; min-width: 4.5em; border-bottom: 1.5px solid var(--ink); margin: 0 3px; transform: translateY(-3px); }
+.seg { text-decoration: none; border-bottom: 2px solid var(--ink); padding-bottom: 1px; }
+.seg sup { font-family: var(--f-mono); font-size: 0.68rem; color: var(--accent); margin-left: 2px; font-weight: 600; }
+.opts { display: grid; grid-template-columns: 1fr; gap: 6px; padding-left: calc(2.2em + 12px); }
+.opts.inline { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
+.opt { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--rule); border-radius: 8px; padding: 9px 12px; cursor: pointer; background: var(--sheet); }
+.opt:hover { border-color: var(--accent); }
+.opt input { position: absolute; opacity: 0; pointer-events: none; }
+.opt .key { font-family: var(--f-mono); font-size: 0.78rem; border: 1px solid var(--rule); border-radius: 5px; width: 1.6em; height: 1.6em; display: inline-flex; align-items: center; justify-content: center; flex: none; margin-top: 1px; }
+.opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.opt:has(input:checked) .key { background: var(--accent); border-color: var(--accent); color: var(--sheet); }
+.opt:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.gapin { padding-left: calc(2.2em + 12px); max-width: 360px; }
+.unsure { padding-left: calc(2.2em + 12px); font-size: 0.82rem; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; cursor: pointer; width: fit-content; }
+.unsure input { accent-color: var(--warn); }
+.rblock { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; align-items: start; padding: 8px 0 26px; border-bottom: 1px dashed var(--rule); }
+.rblock:last-child { border-bottom: 0; }
+.passage { position: sticky; top: 76px; max-height: calc(100vh - 100px); overflow: auto; background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 18px 20px; font-family: var(--f-display); font-size: 1.08rem; line-height: 1.6; display: flex; flex-direction: column; gap: 12px; }
+.passage .ptitle { font-weight: 600; font-size: 1.15rem; }
+@media (max-width: 760px) { .topbar .tabs { flex-wrap: nowrap; overflow-x: auto; width: 100%; padding-bottom: 2px; } .tab { flex: none; } .rblock { grid-template-columns: 1fr; } .passage { position: static; max-height: none; } .opts { padding-left: 0; } .unsure, .gapin { padding-left: 0; } }
+.player { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; }
+.playbtn { width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--accent); color: var(--sheet); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.playbtn:disabled { background: var(--rule); color: var(--muted); cursor: not-allowed; }
+.playbtn svg { width: 18px; height: 18px; }
+.foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; }
+.task-text { font-family: var(--f-display); font-size: 1.1rem; }
+.task-text ul { margin: 6px 0 0; padding-left: 22px; }
+.wc { font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.code { font-family: var(--f-mono); font-size: 0.75rem; word-break: break-all; min-height: 110px; }
+
+/* Teacher */
+.tgrid { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 22px; align-items: start; }
+@media (max-width: 900px) { .tgrid { grid-template-columns: 1fr; } }
+.alist { display: flex; flex-direction: column; gap: 6px; }
+.aitem { text-align: left; border: 1px solid var(--rule); background: var(--sheet); border-radius: 8px; padding: 10px 12px; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
+.aitem[aria-current="true"] { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.report { display: flex; flex-direction: column; gap: 18px; }
+.headline { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center; }
+.bigl { font-family: var(--f-display); font-size: 3.4rem; line-height: 1; font-weight: 500; color: var(--accent); }
+.profile { display: flex; flex-direction: column; gap: 9px; }
+.prow { display: grid; grid-template-columns: 150px minmax(0, 1fr) 92px; gap: 12px; align-items: center; font-size: 0.92rem; }
+.track { position: relative; height: 18px; background: linear-gradient(90deg, transparent calc(20% - 1px), var(--rule) calc(20% - 1px), var(--rule) 20%, transparent 20%, transparent calc(40% - 1px), var(--rule) calc(40% - 1px), var(--rule) 40%, transparent 40%, transparent calc(60% - 1px), var(--rule) calc(60% - 1px), var(--rule) 60%, transparent 60%, transparent calc(80% - 1px), var(--rule) calc(80% - 1px), var(--rule) 80%, transparent 80%); border-bottom: 1px solid var(--rule); }
+.bar { position: absolute; left: 0; top: 3px; bottom: 3px; background: var(--accent); border-radius: 0 4px 4px 0; }
+.bar.pending { background: repeating-linear-gradient(45deg, var(--rule) 0 4px, transparent 4px 8px); width: 100% !important; border-radius: 0; }
+.scale { display: grid; grid-template-columns: 150px minmax(0, 1fr) 92px; gap: 12px; font-family: var(--f-mono); font-size: 0.7rem; color: var(--muted); }
+.scale .ticks { display: grid; grid-template-columns: repeat(5, 1fr); }
+.scale .ticks span { text-align: right; padding-right: 4px; }
+.lvl { font-family: var(--f-mono); font-size: 0.85rem; font-weight: 500; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 500; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; font-family: var(--f-mono); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--f-mono); }
+.tablewrap { overflow-x: auto; }
+.mini { position: relative; height: 8px; background: var(--paper); border-radius: 4px; min-width: 80px; }
+.mini i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; }
+.prio { display: flex; flex-direction: column; gap: 12px; counter-reset: p; }
+.prio > div { display: grid; grid-template-columns: 30px 1fr; gap: 10px; }
+.prio > div::before { counter-increment: p; content: counter(p); font-family: var(--f-display); font-size: 1.6rem; color: var(--accent); line-height: 1; }
+.cell-good { color: var(--good); } .cell-warn { color: var(--warn); } .cell-bad { color: var(--bad); }
+.rub { display: flex; flex-direction: column; gap: 14px; }
+.rubrow { display: flex; flex-direction: column; gap: 6px; }
+.bands { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+.band { border: 1px solid var(--rule); background: var(--sheet); border-radius: 6px; padding: 5px 2px; font-size: 0.75rem; font-family: var(--f-mono); cursor: pointer; text-align: center; }
+.band[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--sheet); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--rule); border-radius: 999px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; background: var(--sheet); }
+.chip[aria-pressed="true"] { border-color: var(--bad); color: var(--bad); background: var(--bad-soft); }
+.essay { white-space: pre-wrap; font-family: var(--f-display); font-size: 1.05rem; background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; max-height: 420px; overflow: auto; }
+details > summary { cursor: pointer; font-weight: 500; }
+details[open] > summary { margin-bottom: 10px; }
+.review td.wrong { background: var(--bad-soft); }
+.ai { border: 1px dashed var(--accent); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; font-size: 0.92rem; }
+.status { font-size: 0.85rem; }
+@media (prefers-reduced-motion: no-preference) { .bar { transition: width 0.4s ease; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const B = JSON.parse(decodeURIComponent(escape(atob("eyJJVEVNUyI6eyJHIjpbeyJpZCI6IkcwMSIsInBhcnQiOiJHIiwic3ViIjoiRy1UTlMiLCJsdmwiOiJBMiIsInR5cGUiOiJtYyIsInEiOiJJIF9fXyB0byDEkMOgIEzhuqF0IGxhc3Qgc3VtbWVyIHdpdGggbXkgZmFtaWx5LiIsIm8iOlsid2FzIGdvIiwid2VudCIsImhhdmUgZ29uZSIsImdvIl19LHsiaWQiOiJHMDIiLCJwYXJ0IjoiRyIsInN1YiI6IkctVE5TIiwibHZsIjoiQTIiLCJ0eXBlIjoibWMiLCJxIjoiTG9vayEgSXQgX19fIG91dHNpZGUuIFRha2UgYW4gdW1icmVsbGEuIiwibyI6WyJyYWluIiwiaXMgcmFpbmluZyIsInJhaW5lZCIsInJhaW5zIl19LHsiaWQiOiJHMDMiLCJwYXJ0IjoiRyIsInN1YiI6IkctVE5TIiwibHZsIjoiQjEiLCJ0eXBlIjoibWMiLCJxIjoiU2hlIF9fXyBFbmdsaXNoIHNpbmNlIHNoZSB3YXMgdGVuLCBhbmQgc2hlIHN0aWxsIGZpbmRzIHBocmFzYWwgdmVyYnMgaGFyZC4iLCJvIjpbImhhcyBiZWVuIHN0dWR5aW5nIiwiaXMgc3R1ZHlpbmciLCJzdHVkaWVkIiwic3R1ZGllcyJdfSx7ImlkIjoiRzA0IiwicGFydCI6IkciLCJzdWIiOiJHLVROUyIsImx2bCI6IkIxIiwidHlwZSI6Im1jIiwicSI6IldoZW4gSSBhcnJpdmVkIGF0IHRoZSBjaW5lbWEsIHRoZSBmaWxtIF9fXywgc28gSSBtaXNzZWQgdGhlIGZpcnN0IHRlbiBtaW51dGVzLiIsIm8iOlsiaGFzIGFscmVhZHkgc3RhcnRlZCIsImhhZCBhbHJlYWR5IHN0YXJ0ZWQiLCJhbHJlYWR5IHN0YXJ0cyIsIndhcyBhbHJlYWR5IHN0YXJ0Il19LHsiaWQiOiJHMDUiLCJwYXJ0IjoiRyIsInN1YiI6IkctVE5TIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiQnkgdGhlIHRpbWUgc2hlIGdyYWR1YXRlcywgc2hlIF9fXyBpbiB0aHJlZSBkaWZmZXJlbnQgY291bnRyaWVzLiIsIm8iOlsid2lsbCBoYXZlIGxpdmVkIiwiaXMgbGl2aW5nIiwid2lsbCBsaXZlIiwibGl2ZXMiXX0seyJpZCI6IkcwNiIsInBhcnQiOiJHIiwic3ViIjoiRy1BUlQiLCJsdmwiOiJBMiIsInR5cGUiOiJtYyIsInEiOiJNeSBicm90aGVyIGlzIF9fXyBlbmdpbmVlciBhdCBhIGJpZyBjb21wYW55LiIsIm8iOlsiYW4iLCJ0aGUiLCJhIiwiKG5vIHdvcmQpIl19LHsiaWQiOiJHMDciLCJwYXJ0IjoiRyIsInN1YiI6IkctQVJUIiwibHZsIjoiQjEiLCJ0eXBlIjoibWMiLCJxIjoiX19fIGhvbmVzdHkgaXMgdGhlIG1vc3QgaW1wb3J0YW50IHF1YWxpdHkgaW4gYSBmcmllbmQuIiwibyI6WyJBbiIsIihubyB3b3JkKSIsIkEiLCJUaGUiXX0seyJpZCI6IkcwOCIsInBhcnQiOiJHIiwic3ViIjoiRy1BUlQiLCJsdmwiOiJCMiIsInR5cGUiOiJtYyIsInEiOiJJIHJlYWQgX19fIGludGVyZXN0aW5nIGFydGljbGUgeWVzdGVyZGF5LiBfX18gYXJ0aWNsZSBzYWlkIHRoYXQgc2xlZXAgaW1wcm92ZXMgbWVtb3J5LiIsIm8iOlsiYSAvIFRoZSIsImFuIC8gQW4iLCJhbiAvIFRoZSIsInRoZSAvIEEiXX0seyJpZCI6IkcwOSIsInBhcnQiOiJHIiwic3ViIjoiRy1BR1IiLCJsdmwiOiJBMiIsInR5cGUiOiJtYyIsInEiOiJUaGVyZSBfX18gYSBsb3Qgb2YgcGVvcGxlIGF0IHRoZSBtYXJrZXQgdGhpcyBtb3JuaW5nLiIsIm8iOlsid2VyZSIsIndhcyIsImJlIiwiaXMiXX0seyJpZCI6IkcxMCIsInBhcnQiOiJHIiwic3ViIjoiRy1BR1IiLCJsdmwiOiJCMSIsInR5cGUiOiJtYyIsInEiOiJDb3VsZCB5b3UgZ2l2ZSBtZSBzb21lIF9fXyBhYm91dCB0aGUgY291cnNlPyIsIm8iOlsiaW5mb3JtYXRpb25zIiwiaW5mb3JtYXRpb24ncyIsImluZm9ybWF0aW9uIiwiYW4gaW5mb3JtYXRpb24iXX0seyJpZCI6IkcxMSIsInBhcnQiOiJHIiwic3ViIjoiRy1BR1IiLCJsdmwiOiJCMSIsInR5cGUiOiJtYyIsInEiOiJFYWNoIG9mIHRoZSBzdHVkZW50cyBfX18gYSBsYXB0b3AuIiwibyI6WyJoYXZlIiwiaGF2aW5nIiwiaGFzIiwiYXJlIGhhdmluZyJdfSx7ImlkIjoiRzEyIiwicGFydCI6IkciLCJzdWIiOiJHLVdGIiwibHZsIjoiQjEiLCJ0eXBlIjoibWMiLCJxIjoiVGhlIHRlYWNoZXIgd2FzIHZlcnkgX19fIHdpdGggb3VyIHByb2dyZXNzLiIsIm8iOlsic2F0aXNmeWluZyIsInNhdGlzZmFjdGlvbiIsInNhdGlzZmllZCIsInNhdGlzZnkiXX0seyJpZCI6IkcxMyIsInBhcnQiOiJHIiwic3ViIjoiRy1XRiIsImx2bCI6IkIxIiwidHlwZSI6Im1jIiwicSI6IkFpciBwb2xsdXRpb24gaGFzIGEgc2VyaW91cyBfX18gb24gY2hpbGRyZW4ncyBoZWFsdGguIiwibyI6WyJlZmZlY3RpdmVseSIsImVmZmVjdGl2ZSIsImFmZmVjdCIsImVmZmVjdCJdfSx7ImlkIjoiRzE0IiwicGFydCI6IkciLCJzdWIiOiJHLVdGIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiVGhlIG5ldyBwb2xpY3kgYWltcyB0byByZWR1Y2UgX19fIGFtb25nIHlvdW5nIHBlb3BsZS4iLCJvIjpbInVuZW1wbG95bWVudCIsInVuZW1wbG95IiwidW5lbXBsb3llZCIsImVtcGxveWluZyJdfSx7ImlkIjoiRzE1IiwicGFydCI6IkciLCJzdWIiOiJHLUNMUyIsImx2bCI6IkIxIiwidHlwZSI6Im1jIiwicSI6IklmIEkgX19fIG1vcmUgdGltZSwgSSB3b3VsZCBsZWFybiB0byBwbGF5IHRoZSBndWl0YXIuIiwibyI6WyJ3b3VsZCBoYXZlIiwid2lsbCBoYXZlIiwiaGFkIiwiaGF2ZSJdfSx7ImlkIjoiRzE2IiwicGFydCI6IkciLCJzdWIiOiJHLUNMUyIsImx2bCI6IkIxIiwidHlwZSI6Im1jIiwicSI6IlRoaXMgYnJpZGdlIF9fXyBpbiAxOTk1LiIsIm8iOlsiYnVpbHQiLCJoYXMgYnVpbHQiLCJ3YXMgYnVpbHQiLCJpcyBidWlsZGluZyJdfSx7ImlkIjoiRzE3IiwicGFydCI6IkciLCJzdWIiOiJHLUNMUyIsImx2bCI6IkIxIiwidHlwZSI6Im1jIiwicSI6IlRoZSB3b21hbiBfX18gbGl2ZXMgbmV4dCBkb29yIGlzIGEgZG9jdG9yLiIsIm8iOlsid2hpY2giLCJ3aG8iLCJ3aGVyZSIsIndob3NlIl19LHsiaWQiOiJHMTgiLCJwYXJ0IjoiRyIsInN1YiI6IkctQ0xTIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiSGUgYXNrZWQgbWUgd2hlcmUgX19fLiIsIm8iOlsiSSBsaXZlZCIsIndhcyBJIGxpdmluZyIsImRvIEkgbGl2ZSIsImRpZCBJIGxpdmUiXX0seyJpZCI6IkcxOSIsInBhcnQiOiJHIiwic3ViIjoiRy1DTFMiLCJsdmwiOiJCMiIsInR5cGUiOiJtYyIsInEiOiJJZiBzaGUgX19fIHRoZSBidXMsIHNoZSB3b3VsZG4ndCBoYXZlIGJlZW4gbGF0ZSBmb3IgdGhlIGV4YW0uIiwibyI6WyJoYWRuJ3QgbWlzc2VkIiwiZGlkbid0IG1pc3MiLCJoYXNuJ3QgbWlzc2VkIiwid291bGRuJ3QgbWlzcyJdfSx7ImlkIjoiRzIwIiwicGFydCI6IkciLCJzdWIiOiJHLVZQIiwibHZsIjoiQjEiLCJ0eXBlIjoibWMiLCJxIjoiSSdtIGxvb2tpbmcgZm9yd2FyZCB0byBfX18geW91IG5leHQgd2Vlay4iLCJvIjpbInNlZSIsInRvIHNlZSIsInNhdyIsInNlZWluZyJdfSx7ImlkIjoiRzIxIiwicGFydCI6IkciLCJzdWIiOiJHLVZQIiwibHZsIjoiQjEiLCJ0eXBlIjoibWMiLCJxIjoiU3R1ZGVudHMgX19fIHVzZSB0aGVpciBwaG9uZXMgZHVyaW5nIHRoZSBleGFtLiBJdCdzIGFnYWluc3QgdGhlIHJ1bGVzLiIsIm8iOlsibmVlZG4ndCIsImNhbiIsIm11c3RuJ3QiLCJkb24ndCBoYXZlIHRvIl19LHsiaWQiOiJHMjIiLCJwYXJ0IjoiRyIsInN1YiI6IkctVlAiLCJsdmwiOiJCMiIsInR5cGUiOiJtYyIsInEiOiJTaGUgX19fIGhhdmUgbGVmdCBhbHJlYWR5LiBIZXIgYmFnIGlzIHN0aWxsIG9uIHRoZSBjaGFpci4iLCJvIjpbImNhbid0IiwibXVzdCIsInNob3VsZCIsIndvdWxkIl19LHsiaWQiOiJHMjMiLCJwYXJ0IjoiRyIsInN1YiI6IkctUFJQIiwibHZsIjoiQTIiLCJ0eXBlIjoibWMiLCJxIjoiTXkgYmlydGhkYXkgaXMgX19fIDV0aCBNYXkuIiwibyI6WyJhdCIsIm9uIiwiYnkiLCJpbiJdfSx7ImlkIjoiRzI0IiwicGFydCI6IkciLCJzdWIiOiJHLVBSUCIsImx2bCI6IkIxIiwidHlwZSI6Im1jIiwicSI6IlNoZSBpcyB2ZXJ5IGdvb2QgX19fIGV4cGxhaW5pbmcgZGlmZmljdWx0IGlkZWFzLiIsIm8iOlsiaW4iLCJhdCIsImZvciIsIndpdGgiXX0seyJpZCI6IkcyNSIsInBhcnQiOiJHIiwic3ViIjoiRy1BR1IiLCJsdmwiOiJBMiIsInR5cGUiOiJlcnIiLCJzIjoiW0E6TXkgc2lzdGVyXSBbQjp3b3JrXSBpbiBhIGhvc3BpdGFsLCBbQzphbmRdIHNoZSBbRDpsb3Zlc10gaGVyIGpvYi4iLCJvIjpbIkEiLCJCIiwiQyIsIkQiXX0seyJpZCI6IkcyNiIsInBhcnQiOiJHIiwic3ViIjoiRy1BR1IiLCJsdmwiOiJCMSIsInR5cGUiOiJlcnIiLCJzIjoiVGhlcmUgYXJlIFtBOm1hbnldIGJlYXV0aWZ1bCBbQjpwbGFjZV0gW0M6dG8gdmlzaXRdIFtEOmluXSBWaWV0bmFtLiIsIm8iOlsiQSIsIkIiLCJDIiwiRCJdfSx7ImlkIjoiRzI3IiwicGFydCI6IkciLCJzdWIiOiJHLUNMUyIsImx2bCI6IkIyIiwidHlwZSI6ImVyciIsInMiOiJbQTpBbHRob3VnaF0gdGhlIHRlc3Qgd2FzIGRpZmZpY3VsdCwgW0I6YnV0XSBtb3N0IHN0dWRlbnRzIFtDOm1hbmFnZWRdIFtEOnRvIHBhc3NdIGl0LiIsIm8iOlsiQSIsIkIiLCJDIiwiRCJdfSx7ImlkIjoiRzI4IiwicGFydCI6IkciLCJzdWIiOiJHLVROUyIsImx2bCI6IkIyIiwidHlwZSI6ImVyciIsInMiOiJJIFtBOmhhdmUgdmlzaXRlZF0gSMOgIE7hu5lpIFtCOnRocmVlIHRpbWVzXSBbQzp3aGVuXSBJIFtEOndhc10gYSBjaGlsZC4iLCJvIjpbIkEiLCJCIiwiQyIsIkQiXX1dLCJWIjpbeyJpZCI6IlYwMSIsInBhcnQiOiJWIiwic3ViIjoiVi1DVFgiLCJsdmwiOiJBMiIsInR5cGUiOiJtYyIsInEiOiJJJ20gc28gX19fLiBJIGhhdmVuJ3QgZWF0ZW4gc2luY2UgYnJlYWtmYXN0LiIsIm8iOlsiYW5ncnkiLCJ0aXJlZCIsImh1bmdyeSIsInRoaXJzdHkiXX0seyJpZCI6IlYwMiIsInBhcnQiOiJWIiwic3ViIjoiVi1DT0wiLCJsdmwiOiJBMiIsInR5cGUiOiJtYyIsInEiOiJDYW4geW91IF9fXyBtZSBhIGZhdm91cj8iLCJvIjpbIm1ha2UiLCJnaXZlIiwiZG8iLCJ0YWtlIl19LHsiaWQiOiJWMDMiLCJwYXJ0IjoiViIsInN1YiI6IlYtQ1RYIiwibHZsIjoiQTIiLCJ0eXBlIjoibWMiLCJxIjoiTXkgYXVudCB3b3JrcyBpbiBhIGhvc3BpdGFsIGFuZCBsb29rcyBhZnRlciBzaWNrIHBlb3BsZS4gU2hlIGlzIGEgX19fLiIsIm8iOlsibnVyc2UiLCJjaGVmIiwiZmFybWVyIiwicGlsb3QiXX0seyJpZCI6IlYwNCIsInBhcnQiOiJWIiwic3ViIjoiVi1DTkYiLCJsdmwiOiJBMiIsInR5cGUiOiJtYyIsInEiOiJJdCdzIGRhcmsgaW4gaGVyZS4gQ2FuIHlvdSBfX18gdGhlIGxpZ2h0LCBwbGVhc2U/IiwibyI6WyJtYWtlIiwicHV0IiwidHVybiBvbiIsIm9wZW4iXX0seyJpZCI6IlYwNSIsInBhcnQiOiJWIiwic3ViIjoiVi1DT0wiLCJsdmwiOiJCMSIsInR5cGUiOiJtYyIsInEiOiJUaGUgY29tcGFueSBfX18gYSBwcm9maXQgZm9yIHRoZSBmaXJzdCB0aW1lIHRoaXMgeWVhci4iLCJvIjpbIm1hZGUiLCJkaWQiLCJ0b29rIiwid29uIl19LHsiaWQiOiJWMDYiLCJwYXJ0IjoiViIsInN1YiI6IlYtQ09MIiwibHZsIjoiQjEiLCJ0eXBlIjoibWMiLCJxIjoiX19fIHJhaW4gY2F1c2VkIGZsb29kaW5nIGluIGNlbnRyYWwgVmlldG5hbSBsYXN0IHdlZWsuIiwibyI6WyJTdHJvbmciLCJCaWciLCJIZWF2eSIsIkhhcmQiXX0seyJpZCI6IlYwNyIsInBhcnQiOiJWIiwic3ViIjoiVi1DTkYiLCJsdmwiOiJCMSIsInR5cGUiOiJtYyIsInEiOiJDYW4geW91IF9fXyBtZSBob3cgdG8gZ2V0IHRvIHRoZSBzdGF0aW9uPyIsIm8iOlsidGVsbCIsInRhbGsiLCJzcGVhayIsInNheSJdfSx7ImlkIjoiVjA4IiwicGFydCI6IlYiLCJzdWIiOiJWLUNORiIsImx2bCI6IkIxIiwidHlwZSI6Im1jIiwicSI6IkkgX19fIHRoZSBidXMgdGhpcyBtb3JuaW5nLCBzbyBJIHdhcyBsYXRlIGZvciBjbGFzcy4iLCJvIjpbImxlZnQiLCJsb3N0IiwicGFzc2VkIiwibWlzc2VkIl19LHsiaWQiOiJWMDkiLCJwYXJ0IjoiViIsInN1YiI6IlYtQ1RYIiwibHZsIjoiQjEiLCJ0eXBlIjoibWMiLCJxIjoiVGhlIG11c2V1bSBpcyBmcmVlLCBzbyB5b3UgZG9uJ3QgaGF2ZSB0byBwYXkgYW4gZW50cmFuY2UgX19fLiIsIm8iOlsiY29zdCIsInByaWNlIiwiYmlsbCIsImZlZSJdfSx7ImlkIjoiVjEwIiwicGFydCI6IlYiLCJzdWIiOiJWLUNUWCIsImx2bCI6IkIxIiwidHlwZSI6Im1jIiwicSI6Ik15IGdyYW5kZmF0aGVyIGlzIHF1aXRlIGVsZGVybHksIHNvIGhlIHdhbGtzIHNsb3dseS4gJ0VsZGVybHknIG1lYW5z4oCmIiwibyI6WyJzaWNrIiwibGF6eSIsInN0cmljdCIsIm9sZCAoYSBwb2xpdGUgd29yZCkiXX0seyJpZCI6IlYxMSIsInBhcnQiOiJWIiwic3ViIjoiVi1DVFgiLCJsdmwiOiJCMiIsInR5cGUiOiJtYyIsInEiOiJUaGUgcmVzdWx0cyBvZiB0aGUgc3R1ZHkgd2VyZSBpbmNvbmNsdXNpdmUuIFRoaXMgbWVhbnMgdGhlIHJlc3VsdHPigKYiLCJvIjpbIndlcmUgY2xlYXJseSBwb3NpdGl2ZSIsIndlcmUgcHVibGlzaGVkIGxhdGUiLCJ3ZXJlIGNvbXBsZXRlbHkgd3JvbmciLCJkaWQgbm90IGxlYWQgdG8gYSBjbGVhciBhbnN3ZXIiXX0seyJpZCI6IlYxMiIsInBhcnQiOiJWIiwic3ViIjoiVi1BQ0EiLCJsdmwiOiJCMiIsInR5cGUiOiJtYyIsInEiOiJUaGUgbnVtYmVyIG9mIHRvdXJpc3RzIGluY3JlYXNlZCBfX18gYmV0d2VlbiAyMDE1IGFuZCAyMDE5LCBmcm9tIDggbWlsbGlvbiB0byAxOCBtaWxsaW9uLiIsIm8iOlsiZHJhbWF0aWNhbGx5IiwiaGFyZGx5Iiwic2xpZ2h0bHkiLCJtYXJnaW5hbGx5Il19LHsiaWQiOiJWMTMiLCJwYXJ0IjoiViIsInN1YiI6IlYtQUNBIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiTWFueSBleHBlcnRzIF9fXyB0aGF0IHNvY2lhbCBtZWRpYSBhZmZlY3RzIHRlZW5hZ2Vycycgc2xlZXAuIiwibyI6WyJ0YWxrIiwiYXJndWUiLCJzYXkgYWJvdXQiLCJkaXNjdXNzIl19LHsiaWQiOiJWMTQiLCJwYXJ0IjoiViIsInN1YiI6IlYtQ09MIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiVGhlIGdvdmVybm1lbnQgc2hvdWxkIF9fXyBtZWFzdXJlcyB0byByZWR1Y2UgdHJhZmZpYyBqYW1zLiIsIm8iOlsiZG8iLCJ0YWtlIiwiZ2l2ZSIsIm1ha2UiXX0seyJpZCI6IlYxNSIsInBhcnQiOiJWIiwic3ViIjoiVi1DTkYiLCJsdmwiOiJCMiIsInR5cGUiOiJtYyIsInEiOiJUaGUgZG9jdW1lbnRhcnkgd2FzIHNvIF9fXyB0aGF0IEkgbGVhcm5lZCBhIGxvdCBmcm9tIGl0LiIsIm8iOlsiaW5mb3JtYXRpb24iLCJpbmZvcm1hbCIsImluZm9ybWVkIiwiaW5mb3JtYXRpdmUiXX0seyJpZCI6IlYxNiIsInBhcnQiOiJWIiwic3ViIjoiVi1DVFgiLCJsdmwiOiJCMiIsInR5cGUiOiJtYyIsInEiOiJEZXNwaXRlIHRoZSBzZXRiYWNrLCB0aGUgdGVhbSBzdGF5ZWQgb3B0aW1pc3RpYy4gQSAnc2V0YmFjaycgaXPigKYiLCJvIjpbImEgc2VhdCBhdCB0aGUgYmFjayIsImEgYmlnIHZpY3RvcnkiLCJhIHByb2JsZW0gdGhhdCBkZWxheXMgcHJvZ3Jlc3MiLCJhIHR5cGUgb2YgaW5qdXJ5Il19LHsiaWQiOiJWMTciLCJwYXJ0IjoiViIsInN1YiI6IlYtQUNBIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiVGhlIGRhdGEgX19fIHRoZSBpZGVhIHRoYXQgc3R1ZGVudHMgbGVhcm4gYmV0dGVyIGluIHRoZSBtb3JuaW5nLiIsIm8iOlsic3VwcG9ydHMiLCJhZ3JlZXMiLCJoZWxwcyIsImJlbGlldmVzIl19LHsiaWQiOiJWMTgiLCJwYXJ0IjoiViIsInN1YiI6IlYtQ09MIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiVGhlcmUgaXMgYSBfX18gbGluayBiZXR3ZWVuIHJlZ3VsYXIgZXhlcmNpc2UgYW5kIGJldHRlciBtb29kLiIsIm8iOlsidGhpY2siLCJiaWciLCJzdHJvbmciLCJoZWF2eSJdfSx7ImlkIjoiVjE5IiwicGFydCI6IlYiLCJzdWIiOiJWLUFDQSIsImx2bCI6IkMxIiwidHlwZSI6Im1jIiwicSI6IkhlciBhcmd1bWVudCB3YXMgX19fOiBldmVyeSBwb2ludCB3YXMgYmFja2VkIGJ5IGNsZWFyIGV2aWRlbmNlLiIsIm8iOlsiY29tcHVsc2l2ZSIsImNvbXBlbGxpbmciLCJjb21wbGljYXRlZCIsImNvbXBldGl0aXZlIl19LHsiaWQiOiJWMjAiLCJwYXJ0IjoiViIsInN1YiI6IlYtQUNBIiwibHZsIjoiQzEiLCJ0eXBlIjoibWMiLCJxIjoiVGhlIG5ldyBsYXcgd2lsbCBoYXZlIGZhci1yZWFjaGluZyBjb25zZXF1ZW5jZXMuIFRoaXMgbWVhbnMgdGhlIGVmZmVjdHMgd2lsbCBiZeKApiIsIm8iOlsib25seSBwb3NpdGl2ZSIsImRpZmZpY3VsdCB0byByZWFjaCIsImZlbHQgb25seSBmYXIgYXdheSIsIndpZGUgYW5kIGxvbmctbGFzdGluZyJdfV0sIlIiOlt7ImlkIjoiUkExIiwicGFydCI6IlIiLCJzdWIiOiJSLURFVCIsImx2bCI6IkEyIiwicGFzc2FnZSI6IlJBIiwidHlwZSI6Im1jIiwicSI6IkhvdyBtdWNoIGRvZXMgdGhlIGNsdWIgY29zdD8iLCJvIjpbIlRoZSB0ZXh0IGRvZXNuJ3Qgc2F5IiwiTm90aGluZyIsIlRlbiBkb2xsYXJzIiwiSXQgZGVwZW5kcyBvbiB0aGUgdG9waWMiXX0seyJpZCI6IlJBMiIsInBhcnQiOiJSIiwic3ViIjoiUi1ERVQiLCJsdmwiOiJBMiIsInBhc3NhZ2UiOiJSQSIsInR5cGUiOiJtYyIsInEiOiJXaGVyZSBkb2VzIHRoZSBjbHViIG1lZXQ/IiwibyI6WyJSb29tIDE1IiwiUm9vbSAyLCBvbiB0aGUgc2Vjb25kIGZsb29yIiwiUm9vbSAyMCIsIk1hcmsncyBob3VzZSJdfSx7ImlkIjoiUkEzIiwicGFydCI6IlIiLCJzdWIiOiJSLUlORiIsImx2bCI6IkEyIiwicGFzc2FnZSI6IlJBIiwidHlwZSI6Im1jIiwicSI6IldoYXQgc2hvdWxkIHlvdSBkbyB0byBnZXQgYSBwbGFjZT8iLCJvIjpbIkJvb2sgb25saW5lIiwiUGF5IGF0IHRoZSBmcm9udCBkZXNrIiwiUGhvbmUgTWFyayIsIkFycml2ZSBlYXJseSJdfSx7ImlkIjoiUkE0IiwicGFydCI6IlIiLCJzdWIiOiJSLURFVCIsImx2bCI6IkEyIiwicGFzc2FnZSI6IlJBIiwidHlwZSI6Im1jIiwicSI6IldoZW4gaXMgdGhlIG5leHQgbWVldGluZz8iLCJvIjpbIlN1bmRheSB0aGUgMTd0aCIsIlRoaXMgU2F0dXJkYXksIHRoZSAxNnRoIiwiU2F0dXJkYXkgdGhlIDIzcmQiLCJFdmVyeSBkYXkgYXQgOTowMCJdfSx7ImlkIjoiUkE1IiwicGFydCI6IlIiLCJzdWIiOiJSLURFVCIsImx2bCI6IkEyIiwicGFzc2FnZSI6IlJBIiwidHlwZSI6Im1jIiwicSI6IldobyBjYW4gam9pbiB0aGUgY2x1Yj8iLCJvIjpbIkFueW9uZSIsIlBlb3BsZSBhZ2VkIDE1IGFuZCBvdmVyIiwiT25seSBzdHVkZW50cyIsIk9ubHkgcGVvcGxlIGZyb20gQ2FuYWRhIl19LHsiaWQiOiJSQjEiLCJwYXJ0IjoiUiIsInN1YiI6IlItR0lTVCIsImx2bCI6IkIxIiwicGFzc2FnZSI6IlJCIiwidHlwZSI6Im1jIiwicSI6IldoYXQgaXMgdGhlIG1haW4gcHVycG9zZSBvZiB0aGUgcG9zdD8iLCJvIjpbIlRvIHdhcm4gdGVlbmFnZXJzIHRoYXQgcGhvbmVzIGFyZSBkYW5nZXJvdXMiLCJUbyBkZXNjcmliZSBhIHBlcnNvbmFsIGV4cGVyaW1lbnQgYW5kIGl0cyByZXN1bHRzIiwiVG8gY29tcGxhaW4gYWJvdXQgaGVyIG1vdGhlciIsIlRvIHJlY29tbWVuZCBhIHR5cGUgb2YgYWxhcm0gY2xvY2siXX0seyJpZCI6IlJCMiIsInBhcnQiOiJSIiwic3ViIjoiUi1ERVQiLCJsdmwiOiJCMSIsInBhc3NhZ2UiOiJSQiIsInR5cGUiOiJtYyIsInEiOiJCZWZvcmUgdGhlIGV4cGVyaW1lbnQsIGhvdyBsb25nIGRpZCBMaW5oIHVzdWFsbHkgdGFrZSB0byBmYWxsIGFzbGVlcD8iLCJvIjpbIkFib3V0IHRlbiBtaW51dGVzIiwiQWJvdXQgZm9ydHkgbWludXRlcyIsIkFsbW9zdCBhbiBob3VyIiwiQWJvdXQgZmlmdGVlbiBtaW51dGVzIl19LHsiaWQiOiJSQjMiLCJwYXJ0IjoiUiIsInN1YiI6IlItVk9DIiwibHZsIjoiQjEiLCJwYXNzYWdlIjoiUkIiLCJ0eXBlIjoibWMiLCJxIjoiSW4gcGFyYWdyYXBoIDIsIFwiYXMgaWYgaXQgd2FzIHBhcnQgb2YgbXkgaGFuZFwiOiB3aGF0IGRvZXMgXCJpdFwiIHJlZmVyIHRvPyIsIm8iOlsiVGhlIGFsYXJtIGNsb2NrIiwiVGhlIGtpdGNoZW4iLCJUaGUgZXhwZXJpbWVudCIsIkhlciBwaG9uZSJdfSx7ImlkIjoiUkI0IiwicGFydCI6IlIiLCJzdWIiOiJSLVZPQyIsImx2bCI6IkIxIiwicGFzc2FnZSI6IlJCIiwidHlwZSI6Im1jIiwicSI6IlwiWW91J3JlIG5vdCBncnVtcHkgYXQgYnJlYWtmYXN0IGFueW1vcmUuXCIgR3J1bXB5IHByb2JhYmx5IG1lYW5z4oCmIiwibyI6WyJsYXRlIiwiaHVuZ3J5Iiwic2xlZXB5IiwiYmFkLXRlbXBlcmVkIl19LHsiaWQiOiJSQjUiLCJwYXJ0IjoiUiIsInN1YiI6IlItSU5GIiwibHZsIjoiQjEiLCJwYXNzYWdlIjoiUkIiLCJ0eXBlIjoibWMiLCJxIjoiV2hhdCBjYW4gd2UgdW5kZXJzdGFuZCBhYm91dCBMaW5oJ3MgbW90aGVyPyIsIm8iOlsiU2hlIG5vdGljZWQgYSBjaGFuZ2UgaW4gTGluaCdzIG1vb2QiLCJTaGUgYWxzbyBzdG9wcGVkIHVzaW5nIGhlciBwaG9uZSIsIlNoZSB0b2xkIExpbmggdG8gZG8gdGhlIGV4cGVyaW1lbnQiLCJTaGUgd2FzIGFubm95ZWQgYWJvdXQgdGhlIGNsYXNzIGNoYW5nZSJdfSx7ImlkIjoiUkI2IiwicGFydCI6IlIiLCJzdWIiOiJSLUlORiIsImx2bCI6IkIyIiwicGFzc2FnZSI6IlJCIiwidHlwZSI6Im1jIiwicSI6IldoYXQgZG9lcyBMaW5oIGRlY2lkZSBhdCB0aGUgZW5kPyIsIm8iOlsiVG8gY29udGludWUsIHdpdGggYSBzbWFsbCBjaGFuZ2UgdG8gaGVyIHJ1bGUiLCJUbyBzdG9wIHRoZSBleHBlcmltZW50IGJlY2F1c2UgaXQgZmFpbGVkIiwiVG8ga2VlcCBoZXIgcGhvbmUgaW4gaGVyIGJlZHJvb20gYWdhaW4iLCJUbyBzdG9wIHVzaW5nIGhlciBwaG9uZSBjb21wbGV0ZWx5Il19LHsiaWQiOiJSQzEiLCJwYXJ0IjoiUiIsInN1YiI6IlItR0lTVCIsImx2bCI6IkIyIiwicGFzc2FnZSI6IlJDIiwidHlwZSI6Im1jIiwicSI6IldoYXQgaXMgdGhlIHdyaXRlcidzIG1haW4gcG9pbnQ/IiwibyI6WyJDcmFtbWluZyBuZXZlciBoZWxwcyBzdHVkZW50cyBwYXNzIHRlc3RzIiwiRWJiaW5naGF1cyBpbnZlbnRlZCBtb2Rlcm4gZWR1Y2F0aW9uIiwiU3ByZWFkaW5nIHN0dWR5IG92ZXIgdGltZSBsZWFkcyB0byBiZXR0ZXIgbG9uZy10ZXJtIG1lbW9yeSB0aGFuIGNyYW1taW5nIiwiSGlnaGxpZ2h0aW5nIGlzIHRoZSBiZXN0IHN0dWR5IHRlY2huaXF1ZSJdfSx7ImlkIjoiUkMyIiwicGFydCI6IlIiLCJzdWIiOiJSLVRGTkciLCJsdmwiOiJCMiIsInBhc3NhZ2UiOiJSQyIsInR5cGUiOiJ0Zm5nIiwicSI6IkViYmluZ2hhdXMgdXNlZCBoaXMgb3duIG1lbW9yeSBpbiBoaXMgZXhwZXJpbWVudHMuIiwibyI6WyJUcnVlIiwiRmFsc2UiLCJOb3QgR2l2ZW4iXX0seyJpZCI6IlJDMyIsInBhcnQiOiJSIiwic3ViIjoiUi1URk5HIiwibHZsIjoiQjIiLCJwYXNzYWdlIjoiUkMiLCJ0eXBlIjoidGZuZyIsInEiOiJPdGhlciBzY2llbnRpc3RzIGNyaXRpY2lzZWQgRWJiaW5naGF1cydzIGV4cGVyaW1lbnRzIGF0IHRoZSB0aW1lLiIsIm8iOlsiVHJ1ZSIsIkZhbHNlIiwiTm90IEdpdmVuIl19LHsiaWQiOiJSQzQiLCJwYXJ0IjoiUiIsInN1YiI6IlItVEZORyIsImx2bCI6IkIyIiwicGFzc2FnZSI6IlJDIiwidHlwZSI6InRmbmciLCJxIjoiQWNjb3JkaW5nIHRvIHRoZSB0ZXh0LCB3ZSBmb3JnZXQgaW5mb3JtYXRpb24gYXQgYSBjb25zdGFudCBzcGVlZC4iLCJvIjpbIlRydWUiLCJGYWxzZSIsIk5vdCBHaXZlbiJdfSx7ImlkIjoiUkM1IiwicGFydCI6IlIiLCJzdWIiOiJSLVZPQyIsImx2bCI6IkIyIiwicGFzc2FnZSI6IlJDIiwidHlwZSI6Im1jIiwicSI6IkluIHBhcmFncmFwaCBDLCBcInJlcGxpY2F0ZWRcIiBpcyBjbG9zZXN0IGluIG1lYW5pbmcgdG/igKYiLCJvIjpbInJlcGVhdGVkIHdpdGggc2ltaWxhciByZXN1bHRzIiwic2ltcGxpZmllZCIsInJlamVjdGVkIiwicHVibGlzaGVkIl19LHsiaWQiOiJSQzYiLCJwYXJ0IjoiUiIsInN1YiI6IlItREVUIiwibHZsIjoiQjIiLCJwYXNzYWdlIjoiUkMiLCJ0eXBlIjoibWMiLCJxIjoiQWNjb3JkaW5nIHRvIHBhcmFncmFwaCBDLCB3aHkgZG9lcyBzcGFjaW5nIHdvcms/IiwibyI6WyJUaGUgYnJhaW4gd29ya3MgaGFyZGVyIHRvIHJlY2FsbCBpbmZvcm1hdGlvbiBhZnRlciBhIGdhcCIsIkluZm9ybWF0aW9uIGlzIGZyZXNoZXIgd2hlbiBpdCBpcyByZXZpZXdlZCIsIkNoaWxkcmVuIGhhdmUgYmV0dGVyIG1lbW9yaWVzIHRoYW4gYWR1bHRzIiwiTGVhcm5lcnMgc3BlbmQgbW9yZSBob3VycyBzdHVkeWluZyBpbiB0b3RhbCJdfSx7ImlkIjoiUkM3IiwicGFydCI6IlIiLCJzdWIiOiJSLUlORiIsImx2bCI6IkMxIiwicGFzc2FnZSI6IlJDIiwidHlwZSI6Im1jIiwicSI6IldoeSBkb2VzIHRoZSB3cml0ZXIgbWVudGlvbiBcImEgc2Vuc2Ugb2YgZmx1ZW5jeVwiIGluIHBhcmFncmFwaCBEPyIsIm8iOlsiVG8gZXhwbGFpbiB3aHkgc3R1ZGVudHMgd3JvbmdseSBiZWxpZXZlIGNyYW1taW5nIHdvcmtzIiwiVG8gZGVzY3JpYmUgaG93IG1lZGljYWwgc3R1ZGVudHMgc3R1ZHkiLCJUbyBkZWZpbmUgdGhlIHNwYWNpbmcgZWZmZWN0IiwiVG8gcHJhaXNlIGNyYW1taW5nIGFzIGEgcXVpY2sgbWV0aG9kIl19LHsiaWQiOiJSQzgiLCJwYXJ0IjoiUiIsInN1YiI6IlItSU5GIiwibHZsIjoiQzEiLCJwYXNzYWdlIjoiUkMiLCJ0eXBlIjoibWMiLCJxIjoiV2hpY2ggc3RhdGVtZW50IGJlc3QgbWF0Y2hlcyBwYXJhZ3JhcGggRT8iLCJvIjpbIlJlcmVhZGluZyB3b3JrcyBiZXR0ZXIgdGhhbiBzcGFjaW5nIiwiU3BhY2luZyBpcyBhIGNvbXBsZXRlIHNvbHV0aW9uIG9uIGl0cyBvd24iLCJTcGFjaW5nIHdvcmtzIGJlc3Qgd2hlbiBjb21iaW5lZCB3aXRoIHNlbGYtdGVzdGluZyIsIlJlc2VhcmNoZXJzIGRpc2FncmVlIGFib3V0IHdoZXRoZXIgc3BhY2luZyB3b3JrcyJdfV0sIkwiOlt7ImlkIjoiTEExIiwicGFydCI6IkwiLCJzdWIiOiJMLURFVCIsImx2bCI6IkEyIiwiY2xpcCI6IkxBIiwidHlwZSI6Im1jIiwicSI6IldoYXQgdGltZSBkb2VzIHRoZSBtYXRjaCBzdGFydD8iLCJvIjpbIjM6MzAiLCI0OjE1IiwiNDozMCIsIjQ6MDAiXX0seyJpZCI6IkxBMiIsInBhcnQiOiJMIiwic3ViIjoiTC1ERVQiLCJsdmwiOiJBMiIsImNsaXAiOiJMQSIsInR5cGUiOiJtYyIsInEiOiJXaGVyZSB3aWxsIFRvbSBhbmQgTWFpIG1lZXQ/IiwibyI6WyJBdCB0aGUgZm9vdGJhbGwgc3RhZGl1bSIsIkF0IFRvbSdzIGhvdXNlIiwiSW5zaWRlIHRoZSBzY2hvb2wiLCJBdCB0aGUgYnVzIHN0b3Agb3V0c2lkZSB0aGUgc2Nob29sIl19LHsiaWQiOiJMQTMiLCJwYXJ0IjoiTCIsInN1YiI6IkwtREVUIiwibHZsIjoiQTIiLCJjbGlwIjoiTEEiLCJ0eXBlIjoibWMiLCJxIjoiV2hhdCBzaG91bGQgTWFpIGJyaW5nPyIsIm8iOlsiQSBqYWNrZXQiLCJBbiB1bWJyZWxsYSIsIlNvbWUgZm9vZCIsIkEgZm9vdGJhbGwiXX0seyJpZCI6IkxBNCIsInBhcnQiOiJMIiwic3ViIjoiTC1ERVQiLCJsdmwiOiJBMiIsImNsaXAiOiJMQSIsInR5cGUiOiJnYXAiLCJxIjoiV3JpdGUgdGhlIGNvYWNoJ3Mgc3VybmFtZTogTXIgX19fX19fX18ifSx7ImlkIjoiTEE1IiwicGFydCI6IkwiLCJzdWIiOiJMLURFVCIsImx2bCI6IkEyIiwiY2xpcCI6IkxBIiwidHlwZSI6Im1jIiwicSI6IldoZW4gc2hvdWxkIHRoZSBwbGF5ZXJzIGVtYWlsIHRoZSBjb2FjaD8iLCJvIjpbIkJlZm9yZSBGcmlkYXkiLCJCZWZvcmUgU2F0dXJkYXkiLCJBZnRlciB0aGUgbWF0Y2giLCJPbiBGcmlkYXkgZXZlbmluZyJdfSx7ImlkIjoiTEIxIiwicGFydCI6IkwiLCJzdWIiOiJMLUlORiIsImx2bCI6IkIxIiwiY2xpcCI6IkxCIiwidHlwZSI6Im1jIiwicSI6IldoeSBkb24ndCB0aGV5IGNob29zZSBwbGFzdGljIHdhc3RlPyIsIm8iOlsiTWluaCBjaGFuZ2VzIGhpcyBtaW5kIiwiQW5vdGhlciBncm91cCBoYXMgYWxyZWFkeSBjaG9zZW4gaXQiLCJJdCdzIHRvbyBkaWZmaWN1bHQgdG8gcmVzZWFyY2giLCJNcyBIb2EgZG9lc24ndCBsaWtlIHRoZSB0b3BpYyJdfSx7ImlkIjoiTEIyIiwicGFydCI6IkwiLCJzdWIiOiJMLUdJU1QiLCJsdmwiOiJCMSIsImNsaXAiOiJMQiIsInR5cGUiOiJtYyIsInEiOiJXaGF0IHRvcGljIGRvIHRoZXkgZmluYWxseSBjaG9vc2U/IiwibyI6WyJNYXJrZXRzIGluIHRoZSBjaXR5IiwiQWlyIHRlbXBlcmF0dXJlIiwiUGxhc3RpYyB3YXN0ZSIsIlVyYmFuIGdhcmRlbnMiXX0seyJpZCI6IkxCMyIsInBhcnQiOiJMIiwic3ViIjoiTC1JTkYiLCJsdmwiOiJCMSIsImNsaXAiOiJMQiIsInR5cGUiOiJtYyIsInEiOiJXaHkgZG9lcyBTYXJhaCB0aGluayB0aGUgaW50ZXJ2aWV3IHdpbGwgYmUgZWFzeSB0byBnZXQ/IiwibyI6WyJIZXIgYXVudCBrbm93cyB0aGUgb3duZXIiLCJUaGUgb3duZXIgaXMgaGVyIGF1bnQiLCJUaGUgZ2FyZGVuIGlzIG5lYXIgaGVyIGhvdXNlIiwiTXMgSG9hIHdpbGwgYXJyYW5nZSBpdCJdfSx7ImlkIjoiTEI0IiwicGFydCI6IkwiLCJzdWIiOiJMLURFVCIsImx2bCI6IkIxIiwiY2xpcCI6IkxCIiwidHlwZSI6Im1jIiwicSI6IldoYXQgd2lsbCBNaW5oIGRvPyIsIm8iOlsiTWFrZSB0aGUgc2xpZGVzIiwiSW50ZXJ2aWV3IHRoZSBvd25lciIsIk1lc3NhZ2UgU2FyYWgncyBhdW50IiwiUmVzZWFyY2ggdGhlIGJlbmVmaXRzIG9mIHJvb2Z0b3AgZ2FyZGVucyJdfSx7ImlkIjoiTEI1IiwicGFydCI6IkwiLCJzdWIiOiJMLUlORiIsImx2bCI6IkIxIiwiY2xpcCI6IkxCIiwidHlwZSI6Im1jIiwicSI6IldoYXQgZG8gd2UgbGVhcm4gYWJvdXQgS2hvYT8iLCJvIjpbIkhlJ3MgZ29vZCBhdCBkZXNpZ24gYW5kIGlzbid0IGluIGEgZ3JvdXAgeWV0IiwiSGUncyBTYXJhaCdzIGNvdXNpbiIsIkhlJ3MgYWxyZWFkeSBpbiBHcm91cCAzIiwiSGUgaXNuJ3QgZ29vZCBhdCBkZXNpZ24iXX0seyJpZCI6IkxCNiIsInBhcnQiOiJMIiwic3ViIjoiTC1ERVQiLCJsdmwiOiJCMSIsImNsaXAiOiJMQiIsInR5cGUiOiJtYyIsInEiOiJXaGVuIGlzIHRoZSBkZWFkbGluZSBub3c/IiwibyI6WyJOZXh0IHdlZWsiLCJUaGUgMTd0aCIsIlRoZSAyMHRoIiwiVGhlIDI3dGgiXX0seyJpZCI6IkxCNyIsInBhcnQiOiJMIiwic3ViIjoiTC1JTkYiLCJsdmwiOiJCMiIsImNsaXAiOiJMQiIsInR5cGUiOiJtYyIsInEiOiJBdCB0aGUgZW5kLCBob3cgZG9lcyBTYXJhaCBmZWVsPyIsIm8iOlsiQW5ncnkiLCJEaXNhcHBvaW50ZWQiLCJDb25mdXNlZCIsIlJlbGlldmVkIl19LHsiaWQiOiJMQzEiLCJwYXJ0IjoiTCIsInN1YiI6IkwtR0lTVCIsImx2bCI6IkIyIiwiY2xpcCI6IkxDIiwidHlwZSI6Im1jIiwicSI6IldoYXQgaXMgdGhlIGxlY3R1cmUgbWFpbmx5IGFib3V0PyIsIm8iOlsiSG93IGFpci1jb25kaXRpb25lcnMgd29yayIsIldoeSBTaW5nYXBvcmUgaXMgYSBob3QgY2l0eSIsIkhvdyB0byBidWlsZCBncmVlbiByb29mcyIsIldoeSBjaXRpZXMgYXJlIHdhcm1lciBhbmQgd2hhdCBjYW4gYmUgZG9uZSJdfSx7ImlkIjoiTEMyIiwicGFydCI6IkwiLCJzdWIiOiJMLURFVCIsImx2bCI6IkIyIiwiY2xpcCI6IkxDIiwidHlwZSI6Im1jIiwicSI6IldoZW4gaXMgdGhlIHRlbXBlcmF0dXJlIGRpZmZlcmVuY2UgYmV0d2VlbiBjaXR5IGFuZCBjb3VudHJ5c2lkZSBncmVhdGVzdD8iLCJvIjpbIkF0IG5pZ2h0IiwiSXQgaXMgdGhlIHNhbWUgYWxsIGRheSIsIkF0IG1pZGRheSIsIkluIHRoZSBlYXJseSBtb3JuaW5nIl19LHsiaWQiOiJMQzMiLCJwYXJ0IjoiTCIsInN1YiI6IkwtREVUIiwibHZsIjoiQjIiLCJjbGlwIjoiTEMiLCJ0eXBlIjoibWMiLCJxIjoiQWNjb3JkaW5nIHRvIHRoZSBzcGVha2VyLCBob3cgZG8gdHJlZXMgY29vbCB0aGUgYWlyPyIsIm8iOlsiQnkgZ2l2aW5nIHNoYWRlIGFuZCByZWxlYXNpbmcgd2F0ZXIgdGhyb3VnaCB0aGVpciBsZWF2ZXMiLCJCeSBhYnNvcmJpbmcgaGVhdCBkdXJpbmcgdGhlIGRheSIsIkJ5IGJsb2NraW5nIHRoZSB3aW5kIiwiQnkgcmVmbGVjdGluZyBzdW5saWdodCBsaWtlIHdoaXRlIHJvb2ZzIl19LHsiaWQiOiJMQzQiLCJwYXJ0IjoiTCIsInN1YiI6IkwtSU5GIiwibHZsIjoiQjIiLCJjbGlwIjoiTEMiLCJ0eXBlIjoibWMiLCJxIjoiV2h5IGRvZXMgdGhlIHNwZWFrZXIgc2F5IFwiaXJvbmljYWxseVwiIGFib3V0IGFpci1jb25kaXRpb25pbmc/IiwibyI6WyJBaXItY29uZGl0aW9uaW5nIHdhcyBpbnZlbnRlZCBpbiBjaXRpZXMiLCJNb3N0IHBlb3BsZSBkb24ndCB1c2UgYWlyLWNvbmRpdGlvbmluZyIsIkFpci1jb25kaXRpb25lcnMgYXJlIHZlcnkgY2hlYXAiLCJTb21ldGhpbmcgdXNlZCBmb3IgY29vbGluZyBhY3R1YWxseSBtYWtlcyBzdHJlZXRzIGhvdHRlciJdfSx7ImlkIjoiTEM1IiwicGFydCI6IkwiLCJzdWIiOiJMLURFVCIsImx2bCI6IkIyIiwiY2xpcCI6IkxDIiwidHlwZSI6Im1jIiwicSI6IldoYXQgaGFzIFNpbmdhcG9yZSBkb25lPyIsIm8iOlsiUGFpbnRlZCBhbGwgaXRzIHJvb2ZzIHdoaXRlIiwiSW52ZXN0ZWQgaW4gZ3JlZW4gcm9vZnMgYW5kIHZlcnRpY2FsIGdhcmRlbnMiLCJSZXBsYWNlZCBjb25jcmV0ZSB3aXRoIGFzcGhhbHQiLCJCYW5uZWQgYWlyLWNvbmRpdGlvbmVycyJdfSx7ImlkIjoiTEM2IiwicGFydCI6IkwiLCJzdWIiOiJMLUlORiIsImx2bCI6IkMxIiwiY2xpcCI6IkxDIiwidHlwZSI6Im1jIiwicSI6IldoYXQgaXMgdGhlIHNwZWFrZXIncyBvcGluaW9uIG9mIHRoZSBzb2x1dGlvbnM/IiwibyI6WyJOZXV0cmFsOiB0aGVyZSBpcyBubyBldmlkZW5jZSB5ZXQiLCJDYXV0aW91c2x5IHBvc2l0aXZlOiBjb3N0bHkgYW5kIHZhcmlhYmxlLCBidXQgdHJlZSBjb3ZlciBoZWxwcyIsIkNvbXBsZXRlbHkgcG9zaXRpdmU6IHRoZXkgc29sdmUgdGhlIHByb2JsZW0iLCJWZXJ5IG5lZ2F0aXZlOiBub25lIG9mIHRoZW0gd29yayJdfV0sIlJXIjpbeyJpZCI6IlJXMDEiLCJwYXJ0IjoiUlciLCJzdWIiOiJSVy1SU1AiLCJsdmwiOiJBMiIsInR5cGUiOiJtYyIsInEiOiJZb3VyIGZyaWVuZCBzYXlzOiBcIlRoYW5rcyBzbyBtdWNoIGZvciBoZWxwaW5nIG1lIVwiIFdoYXQncyB0aGUgbW9zdCBuYXR1cmFsIHJlcGx5PyIsIm8iOlsiVGhhbmsgeW91IHRvby4iLCJZZXMsIGl0J3MgdHJ1ZS4iLCJObyB3b3JyaWVzISIsIkkga25vdy4iXX0seyJpZCI6IlJXMDIiLCJwYXJ0IjoiUlciLCJzdWIiOiJSVy1SU1AiLCJsdmwiOiJBMiIsInR5cGUiOiJtYyIsInEiOiJBIGZyaWVuZCBzYXlzOiBcIkhleSwgaG93J3MgaXQgZ29pbmc/XCIgV2hhdCdzIHRoZSBiZXN0IHJlcGx5PyIsIm8iOlsiQnkgYnVzLiIsIkl0IGdvZXMgd2VsbC4iLCJJJ20gZ29pbmcgdG8gc2Nob29sLiIsIk5vdCBiYWQsIHlvdT8iXX0seyJpZCI6IlJXMDMiLCJwYXJ0IjoiUlciLCJzdWIiOiJSVy1OQVQiLCJsdmwiOiJBMiIsInR5cGUiOiJtYyIsInEiOiJZb3UgZGlkbid0IGhlYXIgd2hhdCBzb21lb25lIHNhaWQuIFdoYXQncyB0aGUgbW9zdCBuYXR1cmFsIHRoaW5nIHRvIHNheT8iLCJvIjpbIlNheSBhZ2FpbiB5b3UuIiwiUmVwZWF0LiIsIldoYXQgeW91IHNheT8iLCJTb3JyeSwgd2hhdCB3YXMgdGhhdD8iXX0seyJpZCI6IlJXMDQiLCJwYXJ0IjoiUlciLCJzdWIiOiJSVy1QViIsImx2bCI6IkIxIiwidHlwZSI6Im1jIiwicSI6IlwiQ2FuIHlvdSBwaWNrIG1lIHVwIGF0IDY/XCIgVGhlIHNwZWFrZXIgd2FudHMgeW91IHRv4oCmIiwibyI6WyJjb21lIGFuZCBjb2xsZWN0IHRoZW0gKGUuZy4gYnkgY2FyIG9yIG1vdG9yYmlrZSkiLCJ3YWtlIHRoZW0gdXAiLCJwaG9uZSB0aGVtIiwibGlmdCB0aGVtIHVwIHdpdGggeW91ciBhcm1zIl19LHsiaWQiOiJSVzA1IiwicGFydCI6IlJXIiwic3ViIjoiUlctUFYiLCJsdmwiOiJCMSIsInR5cGUiOiJtYyIsInEiOiJcIk9oIG5vLCB3ZSd2ZSBydW4gb3V0IG9mIG1pbGsuXCIgVGhpcyBtZWFuc+KApiIsIm8iOlsidGhlcmUncyBubyBtaWxrIGxlZnQiLCJ3ZSBib3VnaHQgdG9vIG11Y2ggbWlsayIsInNvbWVvbmUgcmFuIHRvIGJ1eSBtaWxrIiwidGhlIG1pbGsgd2FzIHNwaWxsZWQiXX0seyJpZCI6IlJXMDYiLCJwYXJ0IjoiUlciLCJzdWIiOiJSVy1JRE0iLCJsdmwiOiJCMSIsInR5cGUiOiJtYyIsInEiOiJCZWZvcmUgeW91ciBzY2hvb2wgcGVyZm9ybWFuY2UsIGEgZnJpZW5kIHNheXM6IFwiQnJlYWsgYSBsZWchXCIgVGhleSBtZWFu4oCmIiwibyI6WyJHb29kIGx1Y2shIiwiVGhleSB3YW50IHlvdSB0byBmYWlsLiIsIkRhbmNlIGFzIGhhcmQgYXMgeW91IGNhbi4iLCJCZSBjYXJlZnVsIG5vdCB0byBmYWxsLiJdfSx7ImlkIjoiUlcwNyIsInBhcnQiOiJSVyIsInN1YiI6IlJXLUlETSIsImx2bCI6IkIxIiwidHlwZSI6Im1jIiwicSI6IlwiVGhhdCB0ZXN0IHdhcyBhIHBpZWNlIG9mIGNha2UuXCIgVGhlIHRlc3Qgd2Fz4oCmIiwibyI6WyJ2ZXJ5IGxvbmciLCJ2ZXJ5IGRpZmZpY3VsdCIsInZlcnkgZWFzeSIsImFib3V0IGZvb2QiXX0seyJpZCI6IlJXMDgiLCJwYXJ0IjoiUlciLCJzdWIiOiJSVy1SRUciLCJsdmwiOiJCMSIsInR5cGUiOiJtYyIsInEiOiJZb3UncmUgZW1haWxpbmcgeW91ciB0ZWFjaGVyIHRvIGFzayBmb3IgbW9yZSB0aW1lIG9uIGFuIGVzc2F5LiBXaGljaCBvcGVuaW5nIGlzIGJlc3Q/IiwibyI6WyJZbywgSSBuZWVkIG1vcmUgdGltZSBwbHMiLCJUbyB3aG9tIGl0IG1heSBjb25jZXJuLCBnaXZlIG1lIG1vcmUgdGltZS4iLCJEZWFyIE1zIEhvYSwgSSBob3BlIHlvdSdyZSB3ZWxsLiBJJ20gd3JpdGluZyB0byBhc2vigKYiLCJIZXkgdGVhY2gsIHdoYXQncyB1cD8iXX0seyJpZCI6IlJXMDkiLCJwYXJ0IjoiUlciLCJzdWIiOiJSVy1OQVQiLCJsdmwiOiJCMSIsInR5cGUiOiJtYyIsInEiOiJXaGljaCBzZW50ZW5jZSBzb3VuZHMgbW9zdCBuYXR1cmFsPyIsIm8iOlsiSSBhbSBsaWtpbmcgdGhpcyBzb25nIHZlcnkuIiwiSSB2ZXJ5IGxpa2UgdGhpcyBzb25nLiIsIkkgcmVhbGx5IGxpa2UgdGhpcyBzb25nLiIsIkkgbGlrZSB2ZXJ5IG11Y2ggdGhpcyBzb25nLiJdfSx7ImlkIjoiUlcxMCIsInBhcnQiOiJSVyIsInN1YiI6IlJXLVNMRyIsImx2bCI6IkIxIiwidHlwZSI6Im1jIiwicSI6IllvdXIgZnJpZW5kIHRleHRzOiBcImJyYlwiLiBUaGlzIG1lYW5z4oCmIiwibyI6WyJicmluZyBhIGJhZyIsImJ5ZSBieWUiLCJiZSByaWdodCBiYWNrIiwiYmUgcmVhbGx5IGJyYXZlIl19LHsiaWQiOiJSVzExIiwicGFydCI6IlJXIiwic3ViIjoiUlctUFJHIiwibHZsIjoiQjEiLCJ0eXBlIjoibWMiLCJxIjoiWW91ciBmcmllbmQgdGVsbHMgeW91IHNoZSBmYWlsZWQgaGVyIGRyaXZpbmcgdGVzdC4gV2hhdCdzIHRoZSBiZXN0IHJlc3BvbnNlPyIsIm8iOlsiR29vZCBmb3IgeW91LiIsIk9oIG5vLCB0aGF0J3Mgcm91Z2guIFlvdSdsbCBzbWFzaCBpdCBuZXh0IHRpbWUuIiwiVGhhdCdzIHlvdXIgZmF1bHQuIiwiQ29uZ3JhdHVsYXRpb25zISJdfSx7ImlkIjoiUlcxMiIsInBhcnQiOiJSVyIsInN1YiI6IlJXLVBWIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiQ3VzdG9tZXIgc2VydmljZSBzYXlzOiBcIkknbGwgbG9vayBpbnRvIGl0LlwiIFRoZXkgbWVhbiB0aGV5IHdpbGzigKYiLCJvIjpbImlnbm9yZSB0aGUgcHJvYmxlbSIsImNoZWNrIG9yIGludmVzdGlnYXRlIHRoZSBwcm9ibGVtIiwibG9vayBpbnNpZGUgdGhlIGJveCIsImxvb2sgYXQgeW91IHdoaWxlIHlvdSB0YWxrIl19LHsiaWQiOiJSVzEzIiwicGFydCI6IlJXIiwic3ViIjoiUlctSURNIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiQWZ0ZXIgZWlnaHQgaG91cnMgb2Ygd29yaywgeW91ciBib3NzIHNheXM6IFwiTGV0J3MgY2FsbCBpdCBhIGRheS5cIiBTaGUgbWVhbnPigKYiLCJvIjpbIkxldCdzIHN0b3Agd29ya2luZyBmb3Igbm93LiIsIkxldCdzIG5hbWUgdGhpcyBkYXkuIiwiTGV0J3Mgd29yayBhbGwgZGF5IHRvbW9ycm93LiIsIkxldCdzIHBob25lIHNvbWVvbmUuIl19LHsiaWQiOiJSVzE0IiwicGFydCI6IlJXIiwic3ViIjoiUlctSURNIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiXCJJJ20gb24gdGhlIGZlbmNlIGFib3V0IHdoaWNoIHVuaSB0byBjaG9vc2UuXCIgVGhlIHNwZWFrZXIgaXPigKYiLCJvIjpbInBsYW5uaW5nIHRvIHRyYXZlbCIsInN1cmUgYWJvdXQgdGhlIGNob2ljZSIsIndvcnJpZWQgYWJvdXQgbW9uZXkiLCJ1bmRlY2lkZWQiXX0seyJpZCI6IlJXMTUiLCJwYXJ0IjoiUlciLCJzdWIiOiJSVy1QUkciLCJsdmwiOiJCMiIsInR5cGUiOiJtYyIsInEiOiJJdCdzIHBvdXJpbmcgd2l0aCByYWluLiBZb3VyIGZyaWVuZCBhcnJpdmVzIHNvYWtpbmcgd2V0IGFuZCBzYXlzOiBcIkxvdmVseSB3ZWF0aGVyIHdlJ3JlIGhhdmluZy5cIiBTaGUgbWVhbnPigKYiLCJvIjpbInNoZSB3YW50cyB0byBnbyBmb3IgYSB3YWxrIiwic2hlIGVuam95cyByYWlueSBkYXlzIiwidGhlIGZvcmVjYXN0IHdhcyB3cm9uZyIsInRoZSB3ZWF0aGVyIGlzIHRlcnJpYmxlIChzaGUncyBiZWluZyBzYXJjYXN0aWMpIl19LHsiaWQiOiJSVzE2IiwicGFydCI6IlJXIiwic3ViIjoiUlctUFJHIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiWW91ciB0ZWFjaGVyIGxvb2tzIGF0IHRoZSB3aW5kb3cgbmV4dCB0byB5b3UgYW5kIHNheXM6IFwiSXQncyBhIGJpdCB3YXJtIGluIGhlcmUsIGlzbid0IGl0P1wiIFNoZSBtb3N0IGxpa2VseeKApiIsIm8iOlsid2FudHMgeW91IHRvIG9wZW4gdGhlIHdpbmRvdyIsImlzIGFza2luZyBhYm91dCB0aGUgd2VhdGhlciBmb3JlY2FzdCIsImlzIGp1c3QgbWFraW5nIGNvbnZlcnNhdGlvbiIsIndhbnRzIHlvdSB0byBsZWF2ZSJdfSx7ImlkIjoiUlcxNyIsInBhcnQiOiJSVyIsInN1YiI6IlJXLVBSRyIsImx2bCI6IkIyIiwidHlwZSI6Im1jIiwicSI6IllvdSBpbnZpdGUgYSBjbGFzc21hdGUgdG8gYSBwYXJ0eS4gU2hlIHNheXM6IFwiT2gsIEknZCBsb3ZlIHRvLCBidXQgSSd2ZSBnb3QgYSBsb3Qgb24gdGhpcyB3ZWVrZW5kLlwiIFNoZSBtZWFuc+KApiIsIm8iOlsic2hlIHdhbnRzIHlvdSB0byBhc2sgYWdhaW4gdG9tb3Jyb3ciLCJzaGUgaGFzIGEgbG90IG9mIGNsb3RoZXMgdG8gY2hvb3NlIGZyb20iLCJzaGUnbGwgZGVmaW5pdGVseSBjb21lIiwic2hlJ3MgcG9saXRlbHkgc2F5aW5nIG5vIl19LHsiaWQiOiJSVzE4IiwicGFydCI6IlJXIiwic3ViIjoiUlctUkVHIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiV2hpY2ggaXMgdGhlIGJlc3Qgd2F5IHRvIGVuZCBhIGZvcm1hbCBlbWFpbD8iLCJvIjpbIkxvdmUsIExpbmgiLCJDaGVlcnMgbWF0ZSwgTGluaCIsIktpbmQgcmVnYXJkcywgTGluaCIsIlNlZSB5YSwgTGluaCJdfSx7ImlkIjoiUlcxOSIsInBhcnQiOiJSVyIsInN1YiI6IlJXLVNMRyIsImx2bCI6IkIyIiwidHlwZSI6Im1jIiwicSI6IlwiVGhhdCBuZXcgY2Fmw6kgaXMgbG93a2V5IGFtYXppbmcuXCIgVGhlIHNwZWFrZXIgbWVhbnPigKYiLCJvIjpbIml0J3MgaG9uZXN0bHkgcmVhbGx5IGdvb2QgKHNhaWQgaW4gYSByZWxheGVkIHdheSkiLCJpdCdzIHZlcnkgcXVpZXQgYW5kIGRhcmsgaW5zaWRlIiwiaXQncyBoaWRkZW4gdW5kZXJncm91bmQiLCJpdCdzIGNoZWFwIl19LHsiaWQiOiJSVzIwIiwicGFydCI6IlJXIiwic3ViIjoiUlctU0xHIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiXCJObyBjYXAsIHRoaXMgaXMgdGhlIGJlc3QgcGjhu58gaW4gdG93bi5cIiBcIk5vIGNhcFwiIG1lYW5z4oCmIiwibyI6WyJ0aGVyZSdzIG5vIGxpbWl0IiwiSSdtIG5vdCBseWluZyAvIGZvciByZWFsIiwibm90IGV4cGVuc2l2ZSIsIndpdGhvdXQgYSBoYXQiXX0seyJpZCI6IlJXMjEiLCJwYXJ0IjoiUlciLCJzdWIiOiJSVy1TTEciLCJsdmwiOiJCMiIsInR5cGUiOiJtYyIsInEiOiJcIkV2ZXJ5b25lIGh5cGVkIHRoYXQgbW92aWUsIGJ1dCBob25lc3RseSBpdCB3YXMga2luZGEgbWlkLlwiIFwiTWlkXCIgbWVhbnPigKYiLCJvIjpbImhhbGZ3YXkgZmluaXNoZWQiLCJhdmVyYWdlLCBub3QgYXMgZ29vZCBhcyBleHBlY3RlZCIsImV4Y2VsbGVudCIsImluIHRoZSBtaWRkbGUgb2YgdGhlIGNpbmVtYSJdfSx7ImlkIjoiUlcyMiIsInBhcnQiOiJSVyIsInN1YiI6IlJXLVNMRyIsImx2bCI6IkIyIiwidHlwZSI6Im1jIiwicSI6IllvdXIgZnJpZW5kIHNlbmRzIGEgbWVtZSBhbmQgd3JpdGVzOiBcIkknbSBkZWFkIPCfkoBcIi4gU2hlIG1lYW5z4oCmIiwibyI6WyJzaGUncyB2ZXJ5IHRpcmVkIiwic2hlJ3Mgc2ljayIsInNoZSdzIHNjYXJlZCIsIml0J3MgZXh0cmVtZWx5IGZ1bm55Il19LHsiaWQiOiJSVzIzIiwicGFydCI6IlJXIiwic3ViIjoiUlctQ1VMIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiQSBCcml0aXNoIGZyaWVuZCBhc2tzOiBcIkZhbmN5IGEgY3VwcGE/XCIgU2hlJ3Mgb2ZmZXJpbmcgeW914oCmIiwibyI6WyJhIHNtYWxsIGNha2UiLCJhIGN1cCBvZiB0ZWEiLCJhIHBob25lIGNhbGwiLCJhIHRyaXAgdG8gdGhlIHNob3BzIl19LHsiaWQiOiJSVzI0IiwicGFydCI6IlJXIiwic3ViIjoiUlctQ1VMIiwibHZsIjoiQjIiLCJ0eXBlIjoibWMiLCJxIjoiWW91J3ZlIGp1c3QgbWV0IGFuIGV4Y2hhbmdlIHN0dWRlbnQgZnJvbSBBdXN0cmFsaWEuIFdoaWNoIHRvcGljIGlzIHVzdWFsbHkgc2FmZXN0IGZvciBzbWFsbCB0YWxrPyIsIm8iOlsiSG93IG9sZCB0aGV5IGFyZSIsIlRoZSB3ZWF0aGVyIG9yIHdlZWtlbmQgcGxhbnMiLCJIb3cgbXVjaCBtb25leSB0aGVpciBwYXJlbnRzIGVhcm4iLCJUaGVpciB3ZWlnaHQiXX0seyJpZCI6IlJXMjUiLCJwYXJ0IjoiUlciLCJzdWIiOiJSVy1JRE0iLCJsdmwiOiJDMSIsInR5cGUiOiJtYyIsInEiOiJcIkhlIHRocmV3IG1lIHVuZGVyIHRoZSBidXMgaW4gdGhlIG1lZXRpbmcuXCIgVGhpcyBtZWFucyBoZeKApiIsIm8iOlsicHVzaGVkIG1lIHBoeXNpY2FsbHkiLCJibGFtZWQgbWUgdG8gcHJvdGVjdCBoaW1zZWxmIiwiZ2F2ZSBtZSBhIGxpZnQgaG9tZSIsImZvcmdvdCBteSBuYW1lIl19LHsiaWQiOiJSVzI2IiwicGFydCI6IlJXIiwic3ViIjoiUlctUFJHIiwibHZsIjoiQzEiLCJ0eXBlIjoibWMiLCJxIjoiQSBCcml0aXNoIGNvbGxlYWd1ZSByZWFkcyB5b3VyIHJlcG9ydCBhbmQgc2F5czogXCJJdCdzIG5vdCBiYWQsIGJ1dCB0aGVyZSBhcmUgYSBmZXcgdGhpbmdzIHdlIG1pZ2h0IHdhbnQgdG8gbG9vayBhdC5cIiBTaGUgcHJvYmFibHkgbWVhbnPigKYiLCJvIjpbIml0J3MgZXhjZWxsZW50Iiwic2hlIGRpZG4ndCByZWFkIGl0IiwiaXQncyBwZXJmZWN0LCBubyBjaGFuZ2VzIG5lZWRlZCIsIml0IG5lZWRzIHNvbWUgcmVhbCBjaGFuZ2VzIChzYWlkIHBvbGl0ZWx5KSJdfV19LCJTS0lMTFMiOnsiRyI6eyJuYW1lIjoiR3JhbW1hciIsInNlc3Npb24iOjF9LCJWIjp7Im5hbWUiOiJWb2NhYnVsYXJ5Iiwic2Vzc2lvbiI6MX0sIlIiOnsibmFtZSI6IlJlYWRpbmciLCJzZXNzaW9uIjoxfSwiTCI6eyJuYW1lIjoiTGlzdGVuaW5nIiwic2Vzc2lvbiI6MX0sIlJXIjp7Im5hbWUiOiJSZWFsLXdvcmxkIEVuZ2xpc2giLCJzZXNzaW9uIjoxfSwiVyI6eyJuYW1lIjoiV3JpdGluZyIsInNlc3Npb24iOjJ9LCJTIjp7Im5hbWUiOiJTcGVha2luZyIsInNlc3Npb24iOjJ9fSwiU1VCUyI6eyJHLVROUyI6eyJza2lsbCI6IkciLCJuYW1lIjoiVGVuc2UgJiBhc3BlY3QifSwiRy1BUlQiOnsic2tpbGwiOiJHIiwibmFtZSI6IkFydGljbGVzIn0sIkctQUdSIjp7InNraWxsIjoiRyIsIm5hbWUiOiJBZ3JlZW1lbnQsIHBsdXJhbHMgJiBjb3VudGFiaWxpdHkifSwiRy1XRiI6eyJza2lsbCI6IkciLCJuYW1lIjoiV29yZCBmb3JtYXRpb24ifSwiRy1DTFMiOnsic2tpbGwiOiJHIiwibmFtZSI6IkNvbXBsZXggc2VudGVuY2VzIn0sIkctVlAiOnsic2tpbGwiOiJHIiwibmFtZSI6Ik1vZGFscyAmIHZlcmIgcGF0dGVybnMifSwiRy1QUlAiOnsic2tpbGwiOiJHIiwibmFtZSI6IlByZXBvc2l0aW9ucyJ9LCJWLUNUWCI6eyJza2lsbCI6IlYiLCJuYW1lIjoiTWVhbmluZyBpbiBjb250ZXh0In0sIlYtQ09MIjp7InNraWxsIjoiViIsIm5hbWUiOiJDb2xsb2NhdGlvbiJ9LCJWLUNORiI6eyJza2lsbCI6IlYiLCJuYW1lIjoiQ29tbW9ubHkgY29uZnVzZWQgd29yZHMifSwiVi1BQ0EiOnsic2tpbGwiOiJWIiwibmFtZSI6IkFjYWRlbWljIHZvY2FidWxhcnkifSwiUi1HSVNUIjp7InNraWxsIjoiUiIsIm5hbWUiOiJHaXN0ICYgbWFpbiBpZGVhIn0sIlItREVUIjp7InNraWxsIjoiUiIsIm5hbWUiOiJTcGVjaWZpYyBkZXRhaWwifSwiUi1JTkYiOnsic2tpbGwiOiJSIiwibmFtZSI6IkluZmVyZW5jZSAmIHdyaXRlcidzIHB1cnBvc2UifSwiUi1WT0MiOnsic2tpbGwiOiJSIiwibmFtZSI6IlZvY2FidWxhcnkgJiByZWZlcmVuY2UgaW4gdGV4dCJ9LCJSLVRGTkciOnsic2tpbGwiOiJSIiwibmFtZSI6IlRydWUgLyBGYWxzZSAvIE5vdCBHaXZlbiJ9LCJMLURFVCI6eyJza2lsbCI6IkwiLCJuYW1lIjoiRGV0YWlsOiBudW1iZXJzLCBuYW1lcywgZmFjdHMifSwiTC1HSVNUIjp7InNraWxsIjoiTCIsIm5hbWUiOiJHaXN0In0sIkwtSU5GIjp7InNraWxsIjoiTCIsIm5hbWUiOiJJbmZlcmVuY2UgJiBzcGVha2VyIGF0dGl0dWRlIn0sIlJXLVJTUCI6eyJza2lsbCI6IlJXIiwibmFtZSI6IkNvbnZlcnNhdGlvbiByZWZsZXhlcyJ9LCJSVy1QViI6eyJza2lsbCI6IlJXIiwibmFtZSI6IlBocmFzYWwgdmVyYnMifSwiUlctSURNIjp7InNraWxsIjoiUlciLCJuYW1lIjoiSWRpb21zICYgZXhwcmVzc2lvbnMifSwiUlctUFJHIjp7InNraWxsIjoiUlciLCJuYW1lIjoiSW1wbGllZCBtZWFuaW5nIn0sIlJXLVJFRyI6eyJza2lsbCI6IlJXIiwibmFtZSI6IlJlZ2lzdGVyICYgcG9saXRlbmVzcyJ9LCJSVy1TTEciOnsic2tpbGwiOiJSVyIsIm5hbWUiOiJTbGFuZyAmIGludGVybmV0IEVuZ2xpc2gifSwiUlctTkFUIjp7InNraWxsIjoiUlciLCJuYW1lIjoiTmF0dXJhbCBwaHJhc2luZyJ9LCJSVy1DVUwiOnsic2tpbGwiOiJSVyIsIm5hbWUiOiJDdWx0dXJhbCBrbm93LWhvdyJ9LCJXLVRBIjp7InNraWxsIjoiVyIsIm5hbWUiOiJUYXNrIGFjaGlldmVtZW50In0sIlctQ0MiOnsic2tpbGwiOiJXIiwibmFtZSI6Ik9yZ2FuaXNhdGlvbiAmIGNvaGVzaW9uIn0sIlctTFIiOnsic2tpbGwiOiJXIiwibmFtZSI6IlZvY2FidWxhcnkgKHdyaXRpbmcpIn0sIlctR1IiOnsic2tpbGwiOiJXIiwibmFtZSI6IkdyYW1tYXIgKHdyaXRpbmcpIn0sIlctUkciOnsic2tpbGwiOiJXIiwibmFtZSI6IlJlZ2lzdGVyICYgdG9uZSAod3JpdGluZykifSwiUy1GQyI6eyJza2lsbCI6IlMiLCJuYW1lIjoiRmx1ZW5jeSAmIGNvaGVyZW5jZSJ9LCJTLUxSIjp7InNraWxsIjoiUyIsIm5hbWUiOiJWb2NhYnVsYXJ5IChzcGVha2luZykifSwiUy1HUiI6eyJza2lsbCI6IlMiLCJuYW1lIjoiR3JhbW1hciAoc3BlYWtpbmcpIn0sIlMtUFIiOnsic2tpbGwiOiJTIiwibmFtZSI6IlByb251bmNpYXRpb24ifSwiUy1JQSI6eyJza2lsbCI6IlMiLCJuYW1lIjoiSW50ZXJhY3Rpb24gJiBwcmFnbWF0aWNzIn19LCJFUlJUQUdTIjp7fSwiUEFTU0FHRVMiOnsiUkEiOnsidGl0bGUiOiJUZXh0IEE6IE5vdGljZSIsImx2bCI6IkEyIiwiYm9keSI6WyJIw5JBIELDjE5IIExJQlJBUlk6IEVOR0xJU0ggQ09OVkVSU0FUSU9OIENMVUIiLCJXYW50IHRvIHByYWN0aXNlIHNwZWFraW5nIEVuZ2xpc2g/IEpvaW4gb3VyIGZyZWUgY2x1YiBldmVyeSBTYXR1cmRheSBmcm9tIDk6MDAgdG8gMTA6MzAgYS5tLiBpbiBSb29tIDIgKHNlY29uZCBmbG9vcikuIiwiRWFjaCB3ZWVrIHdlIGNob29zZSBhIGRpZmZlcmVudCB0b3BpYywgZm9yIGV4YW1wbGUgZm9vZCwgdHJhdmVsIG9yIGZpbG1zLiBPdXIgdm9sdW50ZWVyIGxlYWRlciwgTWFyaywgaXMgZnJvbSBDYW5hZGEgYW5kIGhhcyB0YXVnaHQgRW5nbGlzaCBmb3IgdGVuIHllYXJzLiIsIlBsZWFzZSBub3RlOiB0aGUgY2x1YiBpcyBmb3IgcGVvcGxlIGFnZWQgMTUgYW5kIG92ZXIuIFRoZXJlIGFyZSBvbmx5IDIwIHBsYWNlcyBlYWNoIHdlZWssIHNvIGFycml2ZSBlYXJseS4gWW91IGRvIG5vdCBuZWVkIHRvIGJvb2suIiwiVGhpcyBTYXR1cmRheSAodGhlIDE2dGgpIHRoZSBjbHViIGlzIGNhbmNlbGxlZCBiZWNhdXNlIHRoZSBsaWJyYXJ5IGlzIGNsb3NlZCBmb3IgcmVwYWlycy4gV2Ugd2lsbCBtZWV0IGFnYWluIG9uIFNhdHVyZGF5IHRoZSAyM3JkLiJdfSwiUkIiOnsidGl0bGUiOiJUZXh0IEI6IEJsb2cgcG9zdCIsImx2bCI6IkIxIiwiYm9keSI6WyJNeSBvbmUtbW9udGggcGhvbmUgZXhwZXJpbWVudCwgYnkgTGluaCwgMTciLCJMYXN0IG1vbnRoLCBJIHRyaWVkIGEgc21hbGwgZXhwZXJpbWVudDogbm8gcGhvbmUgYWZ0ZXIgOSBwLm0uIEkgd2FudGVkIHRvIHNlZSBpZiBpdCB3b3VsZCBjaGFuZ2UgbXkgc2xlZXAsIGFuZCBob25lc3RseSwgSSBleHBlY3RlZCB0byBmYWlsIGluIHRoZSBmaXJzdCB3ZWVrLiIsIlRoZSBmaXJzdCBmZXcgbmlnaHRzIHdlcmUgaGFyZC4gSSBrZXB0IHJlYWNoaW5nIGZvciBteSBwaG9uZSB3aXRob3V0IHRoaW5raW5nLCBhcyBpZiBpdCB3YXMgcGFydCBvZiBteSBoYW5kLiBUbyBtYWtlIHRoaW5ncyBlYXNpZXIsIEkgbGVmdCBpdCBpbiB0aGUga2l0Y2hlbiBhbmQgYm91Z2h0IGEgY2hlYXAgYWxhcm0gY2xvY2suIEluc3RlYWQgb2Ygc2Nyb2xsaW5nLCBJIHJlYWQgbm92ZWxzLCBzb21ldGhpbmcgSSBoYWRuJ3QgZG9uZSBzaW5jZSBwcmltYXJ5IHNjaG9vbC4iLCJCeSB0aGUgc2Vjb25kIHdlZWssIEkgbm90aWNlZCBJIHdhcyBmYWxsaW5nIGFzbGVlcCBmYXN0ZXIuIEJlZm9yZSB0aGUgZXhwZXJpbWVudCwgSSB1c3VhbGx5IGxheSBhd2FrZSBmb3IgYWJvdXQgZm9ydHkgbWludXRlcy4gTm93IGl0IHRvb2sgbWUgZmlmdGVlbiBtaW51dGVzIGF0IG1vc3QuIEkgYWxzbyBzdG9wcGVkIHdha2luZyB1cCB0aXJlZCwgd2hpY2ggbXkgbXVtIG5vdGljZWQgYmVmb3JlIEkgZGlkLiBcIllvdSdyZSBub3QgZ3J1bXB5IGF0IGJyZWFrZmFzdCBhbnltb3JlLFwiIHNoZSBzYWlkLiIsIkl0IHdhc24ndCBhbGwgcG9zaXRpdmUsIHRob3VnaC4gSSBtaXNzZWQgc29tZSBncm91cCBjaGF0cyB3aXRoIGZyaWVuZHMsIGFuZCBvbmUgZXZlbmluZyBJIGRpZG4ndCBzZWUgYW4gaW1wb3J0YW50IG1lc3NhZ2UgYWJvdXQgYSBjbGFzcyBjaGFuZ2UgdW50aWwgdGhlIG5leHQgbW9ybmluZy4gVGhhdCB3YXMgYW5ub3lpbmcuIiwiV2lsbCBJIGNvbnRpbnVlPyBNb3N0bHksIHllcy4gSSd2ZSBkZWNpZGVkIHRvIGFsbG93IG15c2VsZiB0ZW4gbWludXRlcyBhdCA5IHAubS4gdG8gY2hlY2sgbWVzc2FnZXMsIGFuZCB0aGVuIHRoZSBwaG9uZSBnb2VzIGJhY2sgdG8gdGhlIGtpdGNoZW4uIEl0J3Mgbm90IHBlcmZlY3QsIGJ1dCBpdCB3b3JrcyBmb3IgbWUuIl19LCJSQyI6eyJ0aXRsZSI6IlRleHQgQzogQXJ0aWNsZSIsImx2bCI6IkIyIiwiYm9keSI6WyJXaHkgY3JhbW1pbmcgZmFpbHM6IHRoZSBzcGFjaW5nIGVmZmVjdCIsIltBXSBNb3N0IHN0dWRlbnRzIGtub3cgdGhlIGZlZWxpbmc6IGFuIGV4YW0gaXMgdG9tb3Jyb3csIGFuZCBhIHdob2xlIHRlcm0ncyBtYXRlcmlhbCBtdXN0IGJlIGxlYXJuZWQgdG9uaWdodC4gQ3JhbW1pbmcgY2FuIHdvcmsgaW4gYSBuYXJyb3cgc2Vuc2UuIFN0dWRlbnRzIHdobyBjcmFtIG9mdGVuIHBhc3MgdGhlIG5leHQgZGF5J3MgdGVzdC4gVGhlIHByb2JsZW0gaXMgd2hhdCBoYXBwZW5zIGFmdGVyd2FyZHMuIiwiW0JdIEluIHRoZSAxODgwcywgdGhlIEdlcm1hbiBwc3ljaG9sb2dpc3QgSGVybWFubiBFYmJpbmdoYXVzIHRlc3RlZCBoaXMgb3duIG1lbW9yeSBieSBsZWFybmluZyBsaXN0cyBvZiBub25zZW5zZSBzeWxsYWJsZXMuIEhlIGZvdW5kIHRoYXQgZm9yZ2V0dGluZyBpcyByYXBpZCBhdCBmaXJzdCBhbmQgdGhlbiBzbG93cyBkb3duLCBhIHBhdHRlcm4gbm93IGtub3duIGFzIHRoZSAnZm9yZ2V0dGluZyBjdXJ2ZScuIENydWNpYWxseSwgaGUgYWxzbyBmb3VuZCB0aGF0IHJldmlld2luZyBtYXRlcmlhbCBzZXZlcmFsIHRpbWVzIG92ZXIgYSBudW1iZXIgb2YgZGF5cyBsZWQgdG8gZmFyIGJldHRlciByZXRlbnRpb24gdGhhbiB0aGUgc2FtZSBhbW91bnQgb2Ygc3R1ZHkgcGFja2VkIGludG8gb25lIHNlc3Npb24uIiwiW0NdIFRoaXMgJ3NwYWNpbmcgZWZmZWN0JyBoYXMgc2luY2UgYmVlbiByZXBsaWNhdGVkIGluIGh1bmRyZWRzIG9mIHN0dWRpZXMsIHdpdGggbGVhcm5lcnMgcmFuZ2luZyBmcm9tIHlvdW5nIGNoaWxkcmVuIHRvIG1lZGljYWwgc3R1ZGVudHMuIE9uZSBleHBsYW5hdGlvbiBpcyB0aGF0IHdoZW4gd2UgcmV0dXJuIHRvIGluZm9ybWF0aW9uIGFmdGVyIGEgZ2FwLCB0aGUgYnJhaW4gaGFzIHRvIHdvcmsgaGFyZGVyIHRvIHJldHJpZXZlIGl0LCBhbmQgdGhpcyBlZmZvcnQgc3RyZW5ndGhlbnMgdGhlIG1lbW9yeS4gSW4gY29udHJhc3QsIHJlcGVhdGluZyBzb21ldGhpbmcgdGhhdCBpcyBzdGlsbCBmcmVzaCBmZWVscyBlYXN5IGJ1dCBwcm9kdWNlcyBsaXR0bGUgbGFzdGluZyBiZW5lZml0LiIsIltEXSBJZiBzcGFjaW5nIGlzIHNvIGVmZmVjdGl2ZSwgd2h5IGlzIGl0IG5vdCBtb3JlIHdpZGVseSB1c2VkPyBQYXJ0IG9mIHRoZSBhbnN3ZXIgaXMgdGhhdCBpdCBmZWVscyBsZXNzIHByb2R1Y3RpdmUuIFN0dWRlbnRzIHdobyBjcmFtIGV4cGVyaWVuY2UgYSBzZW5zZSBvZiBmbHVlbmN5LCBiZWNhdXNlIHRoZSBtYXRlcmlhbCBzZWVtcyBmYW1pbGlhciwgYW5kIHRoZXkgbWlzdGFrZSB0aGlzIGZlZWxpbmcgZm9yIHJlYWwgbGVhcm5pbmcuIFNwYWNlZCBwcmFjdGljZSwgYnkgY29tcGFyaXNvbiwgb2Z0ZW4gZmVlbHMgZWZmb3J0ZnVsIGFuZCB1bmNlcnRhaW4uIiwiW0VdIFJlc2VhcmNoZXJzIGRvIG5vdCBjbGFpbSB0aGF0IHNwYWNpbmcgYWxvbmUgaXMgZW5vdWdoLiBDb21iaW5lZCB3aXRoIHNlbGYtdGVzdGluZywgaG93ZXZlciwgaXQgaXMgb25lIG9mIHRoZSBmZXcgc3R1ZHkgdGVjaG5pcXVlcyB0aGF0IGNvbnNpc3RlbnRseSBvdXRwZXJmb3JtcyByZXJlYWRpbmcgYW5kIGhpZ2hsaWdodGluZy4iXX19LCJDTElQUyI6eyJMQSI6eyJ0aXRsZSI6IkNsaXAgMTogVm9pY2VtYWlsIiwibHZsIjoiQTIiLCJsaW5lcyI6W3sic3AiOiJUb20iLCJ2Ijoicm91bmRlZCIsInRleHQiOiJIaSBNYWksIGl0J3MgVG9tLiBKdXN0IGEgcXVpY2sgbWVzc2FnZSBhYm91dCBTYXR1cmRheS4gVGhlIGZvb3RiYWxsIG1hdGNoIG5vdyBzdGFydHMgYXQgcXVhcnRlciBwYXN0IGZvdXIsIG5vdCBmb3VyIG8nY2xvY2ssIHNvIGxldCdzIG1lZXQgYXQgdGhlIGJ1cyBzdG9wIG91dHNpZGUgdGhlIHNjaG9vbCBhdCBoYWxmIHBhc3QgdGhyZWUuIEl0IG1pZ2h0IGdldCBjb2xkIGluIHRoZSBldmVuaW5nLCBzbyBicmluZyBhIGphY2tldC4gT2gsIGFuZCB0aGUgbmV3IGNvYWNoIHdhbnRzIGV2ZXJ5b25lIHRvIGVtYWlsIGhpbSBiZWZvcmUgRnJpZGF5LiBIaXMgbmFtZSBpcyBNciBXaGl0ZmllbGQuIFRoYXQncyBXLCBILCBJLCBULCBGLCBJLCBFLCBMLCBELiBPa2F5LCBzZWUgeW91IFNhdHVyZGF5ISJ9XX0sIkxCIjp7InRpdGxlIjoiQ2xpcCAyOiBUd28gc3R1ZGVudHMgcGxhbm5pbmcgYSBwcm9qZWN0IiwibHZsIjoiQjEiLCJsaW5lcyI6W3sic3AiOiJNaW5oIiwidiI6InJvdW5kZWQiLCJ0ZXh0IjoiU28sIGZvciB0aGUgcHJlc2VudGF0aW9uLCBJIHdhcyB0aGlua2luZyB3ZSBjb3VsZCBkbyBpdCBvbiBwbGFzdGljIHdhc3RlLiJ9LHsic3AiOiJTYXJhaCIsInYiOiJhaXJ5IiwidGV4dCI6IkhtbSwgbWF5YmUuIEJ1dCBkaWRuJ3QgR3JvdXAgMyBhbHJlYWR5IGNob29zZSB0aGF0PyJ9LHsic3AiOiJNaW5oIiwidiI6InJvdW5kZWQiLCJ0ZXh0IjoiT2gsIGRpZCB0aGV5PyBJIGRpZG4ndCBrbm93LiJ9LHsic3AiOiJTYXJhaCIsInYiOiJhaXJ5IiwidGV4dCI6IlllYWgsIGFuZCBNcyBIb2Egc2FpZCBubyB0d28gZ3JvdXBzIGNhbiBoYXZlIHRoZSBzYW1lIHRvcGljLiBXaGF0IGFib3V0IHVyYmFuIGdhcmRlbnM/IFRoZXJlJ3MgdGhhdCByb29mdG9wIGdhcmRlbiBuZWFyIHRoZSBtYXJrZXQuIFdlIGNvdWxkIGludGVydmlldyB0aGUgb3duZXIuIn0seyJzcCI6Ik1pbmgiLCJ2Ijoicm91bmRlZCIsInRleHQiOiJUaGF0J3Mgbm90IGJhZCwgYWN0dWFsbHkuIEJ1dCBnZXR0aW5nIGFuIGludGVydmlldyBtaWdodCB0YWtlIGFnZXMuIn0seyJzcCI6IlNhcmFoIiwidiI6ImFpcnkiLCJ0ZXh0IjoiTm90IHJlYWxseS4gTXkgYXVudCBrbm93cyBoZXIuIEkgY2FuIG1lc3NhZ2UgaGVyIHRvbmlnaHQuIn0seyJzcCI6Ik1pbmgiLCJ2Ijoicm91bmRlZCIsInRleHQiOiJQZXJmZWN0LiBUaGVuIEknbGwgZG8gdGhlIHJlc2VhcmNoIG9uIHRoZSBiZW5lZml0cy4gWW91IGtub3csIGZvb2QsIHRlbXBlcmF0dXJlLCB0aGF0IGtpbmQgb2YgdGhpbmcuIn0seyJzcCI6IlNhcmFoIiwidiI6ImFpcnkiLCJ0ZXh0IjoiR3JlYXQuIEFuZCB3ZSBuZWVkIHNsaWRlcy4gTmVpdGhlciBvZiB1cyBpcyBnb29kIGF0IGRlc2lnbiwgdGhvdWdoLiJ9LHsic3AiOiJNaW5oIiwidiI6InJvdW5kZWQiLCJ0ZXh0IjoiVHJ1ZS4gTGV0J3MgYXNrIEtob2EuIEhlJ3MgYnJpbGxpYW50IGF0IHRoYXQsIGFuZCBoZSBzdGlsbCBoYXNuJ3Qgam9pbmVkIGEgZ3JvdXAuIn0seyJzcCI6IlNhcmFoIiwidiI6ImFpcnkiLCJ0ZXh0IjoiR29vZCBpZGVhLiBXaGVuJ3MgdGhlIGRlYWRsaW5lIGFnYWluPyBUaGUgdHdlbnRpZXRoPyJ9LHsic3AiOiJNaW5oIiwidiI6InJvdW5kZWQiLCJ0ZXh0IjoiTm8sIGl0IHdhcyBtb3ZlZC4gSXQncyB0aGUgdHdlbnR5LXNldmVudGggbm93LiJ9LHsic3AiOiJTYXJhaCIsInYiOiJhaXJ5IiwidGV4dCI6IlBoZXcuIFRoYXQgZ2l2ZXMgdXMgYW4gZXh0cmEgd2Vlay4ifV19LCJMQyI6eyJ0aXRsZSI6IkNsaXAgMzogU2hvcnQgbGVjdHVyZSIsImx2bCI6IkIyIiwibGluZXMiOlt7InNwIjoiTGVjdHVyZXIiLCJ2IjoiZ2xhc3N5IiwidGV4dCI6IlRvZGF5IEknZCBsaWtlIHRvIGxvb2sgYXQgc29tZXRoaW5nIGNhbGxlZCB0aGUgdXJiYW4gaGVhdCBpc2xhbmQgZWZmZWN0LiBQdXQgc2ltcGx5LCBjaXRpZXMgdGVuZCB0byBiZSB3YXJtZXIgdGhhbiB0aGUgY291bnRyeXNpZGUgYXJvdW5kIHRoZW0sIHNvbWV0aW1lcyBieSBhcyBtdWNoIGFzIHNldmVuIGRlZ3JlZXMgYXQgbmlnaHQuIFdoeSBkb2VzIHRoaXMgaGFwcGVuPyBUaGVyZSBhcmUgdGhyZWUgbWFpbiByZWFzb25zLiJ9LHsic3AiOiJMZWN0dXJlciIsInYiOiJnbGFzc3kiLCJ0ZXh0IjoiVGhlIGZpcnN0IGlzIG1hdGVyaWFscy4gQ29uY3JldGUgYW5kIGFzcGhhbHQgYWJzb3JiIGhlYXQgZHVyaW5nIHRoZSBkYXkgYW5kIHJlbGVhc2UgaXQgc2xvd2x5IGF0IG5pZ2h0LiBUaGF0J3Mgd2h5IHRoZSBkaWZmZXJlbmNlIGlzIGdyZWF0ZXN0IGFmdGVyIHN1bnNldCwgbm90IGF0IG1pZGRheSwgYXMgbWFueSBwZW9wbGUgYXNzdW1lLiJ9LHsic3AiOiJMZWN0dXJlciIsInYiOiJnbGFzc3kiLCJ0ZXh0IjoiVGhlIHNlY29uZCBpcyB0aGUgbGFjayBvZiB2ZWdldGF0aW9uLiBUcmVlcyBjb29sIHRoZSBhaXIgYnkgcHJvdmlkaW5nIHNoYWRlIGFuZCBieSByZWxlYXNpbmcgd2F0ZXIgdGhyb3VnaCB0aGVpciBsZWF2ZXMuIFdoZW4gZ3JlZW4gc3BhY2UgaXMgcmVwbGFjZWQgYnkgYnVpbGRpbmdzLCB3ZSBsb3NlIHRoYXQgbmF0dXJhbCBhaXItY29uZGl0aW9uaW5nLiJ9LHsic3AiOiJMZWN0dXJlciIsInYiOiJnbGFzc3kiLCJ0ZXh0IjoiVGhlIHRoaXJkIHJlYXNvbiBpcywgaXJvbmljYWxseSwgYWlyLWNvbmRpdGlvbmluZyBpdHNlbGYuIEFpciBjb25kaXRpb25lcnMgbW92ZSBoZWF0IGZyb20gaW5zaWRlIGJ1aWxkaW5ncyB0byB0aGUgb3V0c2lkZSwgc28gdGhlIG1vcmUgd2UgY29vbCBvdXIgaG9tZXMsIHRoZSBob3R0ZXIgdGhlIHN0cmVldHMgYmVjb21lLiJ9LHsic3AiOiJMZWN0dXJlciIsInYiOiJnbGFzc3kiLCJ0ZXh0IjoiTm93LCB3aGF0IGNhbiBiZSBkb25lPyBTb21lIGNpdGllcywgc3VjaCBhcyBTaW5nYXBvcmUsIGhhdmUgaW52ZXN0ZWQgaGVhdmlseSBpbiBncmVlbiByb29mcyBhbmQgdmVydGljYWwgZ2FyZGVucy4gT3RoZXJzIGhhdmUgZXhwZXJpbWVudGVkIHdpdGggcGFpbnRpbmcgcm9vZnMgd2hpdGUgdG8gcmVmbGVjdCBzdW5saWdodC4gVGhlc2Ugc29sdXRpb25zIGFyZW4ndCBjaGVhcCwgYW5kIHRoZWlyIGVmZmVjdHMgdmFyeS4gQnV0IHRoZSBldmlkZW5jZSBzbyBmYXIgc3VnZ2VzdHMgdGhhdCBldmVuIG1vZGVzdCBpbmNyZWFzZXMgaW4gdHJlZSBjb3ZlciBjYW4gbWFrZSBhIG5vdGljZWFibGUgZGlmZmVyZW5jZSB0byBzdHJlZXQgdGVtcGVyYXR1cmVzLiJ9XX19LCJXUklUSU5HIjpbeyJpZCI6IlcxIiwibHZsIjoiQjEiLCJ0aW1lIjoyMCwid29yZHMiOiIxMDDigJMxMzAiLCJ0aXRsZSI6IlRhc2sgMTogTWVzc2FnZSB0byBhIGZyaWVuZCIsInByb21wdCI6IllvdXIgRW5nbGlzaC1zcGVha2luZyBmcmllbmQgRW1tYSBpcyB2aXNpdGluZyBIbyBDaGkgTWluaCBDaXR5IG5leHQgbW9udGguIFNoZSBoYXMgYXNrZWQgeW91IGZvciBhZHZpY2UuIFdyaXRlIGhlciBhIG1lc3NhZ2UuIiwiYnVsbGV0cyI6WyJzdWdnZXN0IHR3byBwbGFjZXMgc2hlIHNob3VsZCB2aXNpdCBhbmQgc2F5IHdoeSIsInJlY29tbWVuZCBvbmUgZm9vZCBzaGUgbXVzdCB0cnkiLCJ3YXJuIGhlciBhYm91dCBvbmUgdGhpbmciXX0seyJpZCI6IlcyIiwibHZsIjoiQjHigJNCMiIsInRpbWUiOjM1LCJ3b3JkcyI6IjE4MOKAkzI1MCIsInRpdGxlIjoiVGFzayAyOiBPcGluaW9uIGVzc2F5IiwicHJvbXB0IjoiU29tZSBwZW9wbGUgdGhpbmsgc3R1ZGVudHMgc2hvdWxkIGJlIGFsbG93ZWQgdG8gdXNlIEFJIHRvb2xzIHRvIGhlbHAgd2l0aCB0aGVpciBob21ld29yay4gT3RoZXJzIGJlbGlldmUgdGhpcyBzdG9wcyBzdHVkZW50cyBmcm9tIHJlYWxseSBsZWFybmluZy4iLCJidWxsZXRzIjpbImRpc2N1c3MgYm90aCB2aWV3cyIsImdpdmUgeW91ciBvd24gb3BpbmlvbiB3aXRoIHJlYXNvbnMgYW5kIGV4YW1wbGVzIl19XSwiU1BFQUtJTkciOltdLCJSVUJSSUMiOnt9LCJCQU5EUyI6WyJCZWxvdyBBMSIsIkExIiwiQTIiLCJCMSIsIkIyIiwiQzErIl0sIlRFQUNIRVJfVEFHUyI6e30sIlBBUlRTIjpbeyJrZXkiOiJHIiwidGl0bGUiOiJQYXJ0IDE6IEdyYW1tYXIiLCJtaW5zIjoyMCwiaW50cm8iOiJDaG9vc2UgdGhlIGJlc3QgYW5zd2VyLiBGb3IgcXVlc3Rpb25zIDI14oCTMjgsIGNob29zZSB0aGUgdW5kZXJsaW5lZCBwYXJ0IHRoYXQgaGFzIGEgbWlzdGFrZS4ifSx7ImtleSI6IlYiLCJ0aXRsZSI6IlBhcnQgMjogVm9jYWJ1bGFyeSIsIm1pbnMiOjEyLCJpbnRybyI6IkNob29zZSB0aGUgYmVzdCB3b3JkIG9yIG1lYW5pbmcuIn0seyJrZXkiOiJSIiwidGl0bGUiOiJQYXJ0IDM6IFJlYWRpbmciLCJtaW5zIjoyNSwiaW50cm8iOiJSZWFkIGVhY2ggdGV4dCwgdGhlbiBhbnN3ZXIgdGhlIHF1ZXN0aW9ucy4gWW91IGNhbiBsb29rIGJhY2sgYXQgdGhlIHRleHQgYXMgb2Z0ZW4gYXMgeW91IGxpa2UuIn0seyJrZXkiOiJMIiwidGl0bGUiOiJQYXJ0IDQ6IExpc3RlbmluZyIsIm1pbnMiOjE1LCJpbnRybyI6IlJlYWQgdGhlIHF1ZXN0aW9ucyBmaXJzdC4gVGhlbiBwbGF5IGVhY2ggY2xpcC4gWW91IGNhbiBwbGF5IGVhY2ggY2xpcCB0d2ljZS4ifSx7ImtleSI6IlJXIiwidGl0bGUiOiJQYXJ0IDU6IFJlYWwtd29ybGQgRW5nbGlzaCIsIm1pbnMiOjEyLCJpbnRybyI6IkNob29zZSB3aGF0IGEgZmx1ZW50IEVuZ2xpc2ggc3BlYWtlciB3b3VsZCBhY3R1YWxseSBzYXkgb3IgbWVhbi4ifV0sIlNUVURFTlRfT05MWSI6dHJ1ZX0="))));
+const STUDENT = !!B.STUDENT_ONLY;
+
+/* ---------- Bank indexes ---------- */
+const PART_KEYS = B.PARTS.map(p => p.key);
+const ITEMS = PART_KEYS.flatMap(k => B.ITEMS[k]);
+const NUM = {}; ITEMS.forEach((it, i) => { NUM[it.id] = i + 1; });
+const LVLS = ["A2", "B1", "B2", "C1"];
+const LVIDX = { A1: 1, A2: 2, B1: 3, B2: 4, C1: 5 };
+const LNAME = { 1: "Below A2", 2: "A2", 3: "B1", 4: "B2", 5: "C1" };
+const OBJ_SKILLS = ["G", "V", "R", "L", "RW"];
+const KEYS = "ABCDEF";
+
+/* ---------- Helpers ---------- */
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const $ = (s, el = document) => el.querySelector(s);
+const fmtTime = s => { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+const words = t => (String(t || "").trim().match(/\S+/g) || []).length;
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+const K_CUR = "eldiag.v1.current", K_LIB = "eldiag.v1.library", K_TEACH = "eldiag.v1.teacher";
+const enc = obj => "ELD1." + btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+const dec = str => { const s = String(str).trim().replace(/^ELD1\./, ""); return JSON.parse(decodeURIComponent(escape(atob(s)))); };
+function blankify(q) { return esc(q).replace(/_{3,}/g, '<span class="blank" aria-label="blank"></span>'); }
+
+/* ---------- Attempt state ---------- */
+function newAttempt(name) {
+  return {
+    v: 1, id: "a" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name.trim(), created: new Date().toISOString(),
+    s1: { ans: {}, unsure: {}, time: {}, plays: {}, part: 0, done: false, finished: null },
+    s2: { text: { W1: "", W2: "" }, time: {}, done: false, finished: null },
+    marks: { W: { scores: {}, tags: [], notes: "" }, S: { scores: {}, tags: [], notes: "" } },
+  };
+}
+let A = store.get(K_CUR, null);
+let dbStatus = "none"; // none | saving | saved | failed
+
+/* ---------- Capabilities (all optional) ---------- */
+const caps = { db: null, user: null, tts: null, sample: null };
+let isOwner = false;
+async function initCaps() {
+  if (!window.claude || typeof window.claude.use !== "function") return;
+  const get = async n => { try { return await window.claude.use(n); } catch { return null; } };
+  const [u, d, t, s] = await Promise.all([get("user"), get("db"), get("tts"), get("sample")]);
+  Object.assign(caps, { user: u, db: d, tts: t, sample: s });
+  try { isOwner = u ? !!(await u.isOwner()) : false; } catch { isOwner = false; }
+  if (caps.db && A) syncDb();
+  if (route() === "teacher") { subscribeAttempts(); render(); }
+}
+
+let dbTimer = null, dbBusy = false, dbAgain = false;
+function syncDb() {
+  if (!caps.db || !A) return;
+  clearTimeout(dbTimer);
+  dbTimer = setTimeout(async () => {
+    if (dbBusy) { dbAgain = true; return; }
+    dbBusy = true; dbStatus = "saving";
+    try { await caps.db.doc("attempts/" + A.id).set(JSON.parse(JSON.stringify(A))); dbStatus = "saved"; }
+    catch (e) { dbStatus = "failed"; }
+    dbBusy = false; updateSaveStatus();
+    if (dbAgain) { dbAgain = false; syncDb(); }
+  }, 1500);
+}
+function save(remote = true) { if (!A) return; store.set(K_CUR, A); if (remote) syncDb(); }
+function updateSaveStatus() { const el = $("#savestatus"); if (el) el.innerHTML = saveStatusHTML(); }
+function saveStatusHTML() {
+  if (dbStatus === "saved") return '<span class="pill good">Saved for your teacher</span>';
+  if (dbStatus === "saving") return '<span class="pill">Saving…</span>';
+  return '<span class="pill">Saved on this device</span>';
+}
+
+/* ---------- Routing ---------- */
+function route() { const h = (location.hash || "").replace("#", ""); if (STUDENT && h === "teacher") return "home"; return ["session-1", "session-2", "teacher", "done-1", "done-2"].includes(h) ? h : "home"; }
+window.addEventListener("hashchange", () => { stopAudio(); render(); window.scrollTo(0, 0); });
+function go(h) { if (location.hash === "#" + h) { render(); window.scrollTo(0, 0); } else location.hash = h; }
+
+/* ---------- Scoring ---------- */
+function isCorrect(it, r) {
+  if (r === undefined || r === null || r === "") return false;
+  if (it.type === "gap") { const n = String(r).toLowerCase().replace(/^mr\.?\s+/, "").replace(/[^a-z]/g, ""); return it.accept.includes(n); }
+  return Number(r) === it.ans;
+}
+function errTag(it, r) {
+  if (r === undefined || r === null || r === "") return "UNANSWERED";
+  if (isCorrect(it, r)) return null;
+  if (it.type === "gap" || it.type === "err") return it.tag;
+  if (it.type === "tfng") { const NG = 2; return (it.ans === NG || Number(r) === NG) ? "NG_CONFUSION" : "MISREAD"; }
+  return (it.t && it.t[Number(r)]) || "MISREAD";
+}
+function respText(it, r) {
+  if (r === undefined || r === null || r === "") return "—";
+  if (it.type === "gap") return String(r);
+  return KEYS[Number(r)] + ". " + it.o[Number(r)];
+}
+function ansText(it) { return it.type === "gap" ? it.accept[0].replace(/^./, c => c.toUpperCase()) : KEYS[it.ans] + ". " + it.o[it.ans]; }
+
+function estimate(lv) {
+  let ach = 1, next = null, top = 0;
+  for (const L of LVLS) if (lv[L] && lv[L].n) top = LVIDX[L];
+  for (const L of LVLS) {
+    const x = lv[L]; if (!x || !x.n) continue;
+    const p = x.c / x.n;
+    if (p >= 0.6) ach = LVIDX[L]; else { next = { L, p }; break; }
+  }
+  if (!next) return { pos: ach, label: LNAME[ach], ceiling: ach === top && ach < 5 };
+  return { pos: ach + Math.min(next.p / 0.6, 1) * 0.85, label: LNAME[ach] + (next.p >= 0.4 && ach > 1 ? "+" : "") };
+}
+function prodEstimate(scores) {
+  const vals = Object.values(scores || {}).filter(v => typeof v === "number");
+  if (!vals.length) return null;
+  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+  return { pos: Math.max(avg, 0.15), label: B.BANDS[Math.round(avg)].replace("C1+", "C1"), n: vals.length };
+}
+
+function analyse(at) {
+  const s1 = at.s1 || { ans: {}, unsure: {} };
+  const out = { items: [], skill: {}, sub: {}, tags: {}, unanswered: 0, sureWrong: [], unsureRight: [], answered: 0 };
+  for (const k of OBJ_SKILLS) out.skill[k] = { n: 0, c: 0, lv: {} };
+  for (const it of ITEMS) {
+    const r = s1.ans[it.id]; const ok = isCorrect(it, r); const tag = errTag(it, r); const unsure = !!s1.unsure[it.id];
+    const answered = !(r === undefined || r === null || r === "");
+    if (answered) out.answered++;
+    const sk = out.skill[it.part]; sk.n++; if (ok) sk.c++;
+    (sk.lv[it.lvl] ||= { n: 0, c: 0 }).n++; if (ok) sk.lv[it.lvl].c++;
+    const sb = (out.sub[it.sub] ||= { n: 0, c: 0, sureWrong: 0, unsureRight: 0, wrong: [] }); sb.n++;
+    if (ok) { sb.c++; if (unsure) { sb.unsureRight++; out.unsureRight.push(it.id); } }
+    else { sb.wrong.push(it.id); if (answered && !unsure) { sb.sureWrong++; out.sureWrong.push(it.id); } }
+    if (tag === "UNANSWERED") out.unanswered++;
+    else if (tag) { const t = (out.tags[tag] ||= { n: 0, ids: [], src: new Set() }); t.n++; t.ids.push(it.id); t.src.add(B.SKILLS[it.part].name); }
+    out.items.push({ it, r, ok, tag, unsure });
+  }
+  for (const k of OBJ_SKILLS) out.skill[k].est = estimate(out.skill[k].lv);
+  for (const k of ["W", "S"]) {
+    const m = (at.marks || {})[k] || {};
+    out.skill[k] = { est: prodEstimate(m.scores) };
+    for (const tg of m.tags || []) { const t = (out.tags[tg] ||= { n: 0, ids: [], src: new Set() }); t.n += 2; t.src.add(B.SKILLS[k].name); }
+  }
+  // priorities
+  const cands = [];
+  for (const [sub, x] of Object.entries(out.sub)) if (x.n >= 2) cands.push({ sub, score: x.c / x.n, weak: (1 - x.c / x.n + 0.04 * x.sureWrong) * (sub === "RW-SLG" ? 0.7 : 1), detail: x.c + "/" + x.n + " correct" + (x.sureWrong ? " · " + x.sureWrong + " confident error" + (x.sureWrong > 1 ? "s" : "") : "") });
+  for (const k of ["W", "S"]) {
+    const sc = ((at.marks || {})[k] || {}).scores || {};
+    for (const [sub, v] of Object.entries(sc)) if (typeof v === "number") cands.push({ sub, score: (v - 1) / 4, weak: 1 - (v - 1) / 4, detail: "marked " + B.BANDS[v] });
+  }
+  cands.sort((a, b) => b.weak - a.weak);
+  out.priorities = cands.filter(c => c.score < 0.67).slice(0, 5);
+  out.strengths = cands.filter(c => c.score >= 0.8).sort((a, b) => b.score - a.score).slice(0, 4);
+  const pos = ["G", "V", "R", "L", "RW", "W", "S"].map(k => out.skill[k].est).filter(Boolean).map(e => e.pos).sort((a, b) => a - b);
+  out.overall = pos.length ? pos[Math.floor((pos.length - 1) / 2)] : null;
+  return out;
+}
+function posLabel(p) { if (p == null) return "—"; const base = Math.floor(p + 1e-9); const frac = p - base; return (LNAME[Math.min(base, 5)] || "Below A2") + (frac >= 0.5 && base < 5 && base > 1 ? "+" : ""); }
+
+/* ---------- Audio ---------- */
+let speaking = null;
+function stopAudio() { try { caps.tts && caps.tts.stop(); } catch {} try { window.speechSynthesis && speechSynthesis.cancel(); } catch {} speaking = null; }
+async function playClip(key) {
+  const clip = B.CLIPS[key]; const plays = A.s1.plays[key] || 0;
+  if (plays >= 2 || speaking) return;
+  A.s1.plays[key] = plays + 1; save(); speaking = key; renderPlayer(key, "Playing…");
+  const done = (msg) => { speaking = null; renderPlayer(key, msg); };
+  if (caps.tts) {
+    try { await caps.tts.speak(clip.lines.map(l => ({ text: l.text, voice: l.v, language: "en" }))); done("Finished"); return; }
+    catch (e) { if (e && e.code === "not_granted") caps.tts = null; else { done("Playback stopped"); return; } }
+  }
+  if (!("speechSynthesis" in window)) { done("This browser can't play audio. Ask your teacher to read the clip aloud."); return; }
+  const voices = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang));
+  const pick = { rounded: voices[0], airy: voices[1] || voices[0], glassy: voices[2] || voices[0] };
+  const lines = clip.lines.slice();
+  const next = () => {
+    const l = lines.shift(); if (!l) { done("Finished"); return; }
+    const u = new SpeechSynthesisUtterance(l.text); if (pick[l.v]) u.voice = pick[l.v]; u.lang = "en-GB"; u.rate = 0.95;
+    u.onend = next; u.onerror = () => done("Playback stopped"); speechSynthesis.speak(u);
+  };
+  next();
+}
+function renderPlayer(key, msg) {
+  const el = document.querySelector(`[data-player="${key}"]`); if (!el) return;
+  const plays = A.s1.plays[key] || 0; const left = 2 - plays;
+  el.querySelector(".playbtn").disabled = left <= 0 || !!speaking;
+  el.querySelector(".pmsg").textContent = msg || (left > 0 ? `${left} play${left === 1 ? "" : "s"} left` : "No plays left");
+}
+
+/* ---------- Timers ---------- */
+let tick = null;
+function startTick(fn) { clearInterval(tick); let n = 0; tick = setInterval(() => { fn(); if (++n % 5 === 0) save(false); }, 1000); }
+function stopTick() { clearInterval(tick); tick = null; }
+
+/* ---------- Views ---------- */
+function render() {
+  stopTick();
+  const r = route(); const app = $("#app");
+  if ((r === "session-1" || r === "session-2" || r === "done-1" || r === "done-2") && !A) { location.hash = "home"; return; }
+  if (r === "home") app.innerHTML = viewHome();
+  if (r === "session-1") { app.innerHTML = viewS1(); bindS1(); }
+  if (r === "session-2") { app.innerHTML = viewS2(); bindS2(); }
+  if (r === "done-1" || r === "done-2") app.innerHTML = viewDone(r === "done-1" ? 1 : 2);
+  if (r === "teacher") { app.innerHTML = viewTeacher(); bindTeacher(); }
+}
+
+function s1Status() {
+  if (!A) return "Not started";
+  if (A.s1.done) return "Finished";
+  const n = Object.keys(A.s1.ans).length; return n ? `${n} of ${ITEMS.length} answered` : "Not started";
+}
+function viewHome() {
+  const parts = B.PARTS.map(p => `<li>${esc(p.title.replace(/^Part \d+: /, ""))} · ${B.ITEMS[p.key].length} questions · ${p.mins} min</li>`).join("");
+  const mins = B.PARTS.reduce((a, p) => a + p.mins, 0);
+  return `<main class="wrap">
+  <header class="hero"><span class="eyebrow">CEFR A2–C1 · Two sessions</span><h1>English Diagnostic Test</h1>
+  <p>Exam English and real-world English in one test. Answer honestly and tick <b>Not sure</b> whenever you're guessing. That helps your teacher more than a lucky guess.</p></header>
+  ${A ? `<div class="sheet"><div class="row spread"><div><span class="eyebrow">Taking the test as</span><h2>${esc(A.name)}</h2></div><div id="newbox"><button class="btn ghost small" id="newatt">Start over with a new name</button></div></div></div>`
+      : `<form class="sheet" id="startform"><label for="nm"><span class="eyebrow">Your name</span></label><div class="row"><input type="text" id="nm" autocomplete="name" placeholder="e.g. Nguyễn Minh Anh" style="flex:1;min-width:220px" required><button class="btn primary" type="submit">Start</button></div></form>`}
+  <div class="cards">
+    <section class="card"><span class="eyebrow">Session 1 · about ${mins} min</span><h3>Grammar, vocabulary, reading, listening, real-world English</h3>
+      <ol class="grow">${parts}</ol>
+      <div class="row spread"><span class="pill ${A && A.s1.done ? "good" : ""}">${s1Status()}</span>
+      <button class="btn primary" data-go="session-1" ${A ? "" : "disabled"}>${A && Object.keys(A.s1.ans).length ? (A.s1.done ? "Review" : "Continue") : "Begin"}</button></div></section>
+    <section class="card"><span class="eyebrow">Session 2 · about 55 min + speaking</span><h3>Writing and speaking</h3>
+      <ol class="grow"><li>Message to a friend · 100–130 words · 20 min</li><li>Opinion essay · 180–250 words · 35 min</li><li>Speaking with your teacher · about 15 min</li></ol>
+      <div class="row spread"><span class="pill ${A && A.s2.done ? "good" : ""}">${A && A.s2.done ? "Writing submitted" : (A && (A.s2.text.W1 || A.s2.text.W2) ? "In progress" : "Not started")}</span>
+      <button class="btn primary" data-go="session-2" ${A ? "" : "disabled"}>${A && (A.s2.text.W1 || A.s2.text.W2) ? "Continue" : "Begin"}</button></div></section>
+  </div>
+  <p class="small muted">You can stop and come back later on this device. Your answers are saved as you go.</p>
+  ${STUDENT ? "" : `<p class="small muted" style="margin-top:24px">For teachers: <button class="link" data-go="teacher">open the marking and report view</button></p>`}
+  </main>`;
+}
+
+function itemHTML(it) {
+  const n = NUM[it.id]; const r = A.s1.ans[it.id]; const un = !!A.s1.unsure[it.id];
+  let q, body;
+  if (it.type === "err") {
+    q = esc(it.s).replace(/\[([A-D]):([^\]]+)\]/g, (m, k, t) => `<span class="seg">${t}<sup>${k}</sup></span>`);
+    body = `<div class="opts inline" role="radiogroup" aria-label="Question ${n}">${it.o.map((o, i) => optHTML(it, i, o, r)).join("")}</div>`;
+    q = `<span class="muted small">Which underlined part is wrong?</span><br>` + q;
+  } else if (it.type === "gap") {
+    q = esc(it.q).replace(/_{3,}/g, '<span class="blank"></span>');
+    body = `<div class="gapin"><input type="text" data-gap="${it.id}" value="${esc(r || "")}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Answer to question ${n}"></div>`;
+  } else {
+    q = it.type === "tfng" ? `${esc(it.q)} <span class="muted small">(True / False / Not Given)</span>` : blankify(it.q);
+    body = `<div class="opts ${it.type === "tfng" ? "inline" : ""}" role="radiogroup" aria-label="Question ${n}">${it.o.map((o, i) => optHTML(it, i, o, r)).join("")}</div>`;
+  }
+  return `<div class="item" id="q-${it.id}"><div class="qhead"><span class="qnum">${n}</span><p class="qtext">${q}</p></div>${body}
+  <label class="unsure"><input type="checkbox" data-unsure="${it.id}" ${un ? "checked" : ""}> Not sure</label></div>`;
+}
+function optHTML(it, i, o, r) {
+  const id = `${it.id}-${i}`;
+  return `<label class="opt" for="${id}"><input type="radio" id="${id}" name="${it.id}" value="${i}" ${r !== undefined && Number(r) === i ? "checked" : ""}><span class="key">${KEYS[i]}</span><span>${it.type === "err" ? "Part " + o : esc(o)}</span></label>`;
+}
+function partCount(key) { return B.ITEMS[key].filter(it => { const r = A.s1.ans[it.id]; return !(r === undefined || r === ""); }).length; }
+function viewS1() {
+  const pi = Math.min(A.s1.part || 0, B.PARTS.length - 1); const P = B.PARTS[pi]; const items = B.ITEMS[P.key];
+  const tabs = B.PARTS.map((p, i) => `<button class="tab" data-part="${i}" aria-current="${i === pi}">${i + 1}. ${esc(p.title.replace(/^Part \d+: /, ""))} <span class="cnt">${partCount(p.key)}/${B.ITEMS[p.key].length}</span></button>`).join("");
+  let content = "";
+  if (P.key === "R") {
+    const groups = [...new Set(items.map(i => i.passage))];
+    content = groups.map(g => { const ps = B.PASSAGES[g]; return `<section class="rblock"><article class="passage" tabindex="0" aria-label="${esc(ps.title)}"><span class="eyebrow">${esc(ps.title)}</span>${ps.body.map((p, i) => `<p class="${i === 0 ? "ptitle" : ""}">${esc(p)}</p>`).join("")}</article><div class="items">${items.filter(i => i.passage === g).map(itemHTML).join("")}</div></section>`; }).join("");
+  } else if (P.key === "L") {
+    const groups = [...new Set(items.map(i => i.clip))];
+    content = groups.map(g => { const c = B.CLIPS[g]; const left = 2 - (A.s1.plays[g] || 0); return `<section style="display:flex;flex-direction:column;gap:12px;padding-bottom:20px">
+      <div class="player" data-player="${g}"><button class="playbtn" data-play="${g}" aria-label="Play ${esc(c.title)}" ${left <= 0 ? "disabled" : ""}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3l12 7-12 7z" fill="currentColor"/></svg></button>
+      <div><div style="font-weight:500">${esc(c.title)}</div><div class="small muted pmsg">${left > 0 ? left + " play" + (left === 1 ? "" : "s") + " left" : "No plays left"}</div></div></div>
+      <div class="items">${items.filter(i => i.clip === g).map(itemHTML).join("")}</div></section>`; }).join("");
+  } else content = `<div class="items">${items.map(itemHTML).join("")}</div>`;
+  const last = pi === B.PARTS.length - 1;
+  return `<div class="topbar"><div class="inner"><div class="tabs" role="tablist">${tabs}</div><div class="row"><span id="savestatus">${saveStatusHTML()}</span><span class="timer" id="timer"></span><button class="btn small ghost" data-go="home">Pause</button></div></div></div>
+  <main class="wrap ${P.key === "R" ? "wide" : ""}"><div class="sheet"><div><span class="eyebrow">Session 1 · suggested ${P.mins} min</span><h2>${esc(P.title)}</h2></div><p class="muted">${esc(P.intro)}</p>
+  ${P.key === "L" ? `<p class="small muted">Use headphones if you can. The clips are read by a computer voice.</p>` : ""}
+  ${content}
+  <div class="foot"><button class="btn" data-part="${pi - 1}" ${pi === 0 ? "disabled" : ""}>← Previous part</button>
+  <div id="finishbox" class="row">${last ? `<button class="btn primary" id="finish1">Finish Session 1</button>` : `<button class="btn primary" data-part="${pi + 1}">Next part →</button>`}</div></div></div></main>`;
+}
+function bindS1() {
+  const P = B.PARTS[Math.min(A.s1.part || 0, B.PARTS.length - 1)];
+  const updTimer = () => { const t = A.s1.time[P.key] || 0; const el = $("#timer"); if (el) { el.textContent = fmtTime(t) + " / " + P.mins + ":00"; el.classList.toggle("over", t > P.mins * 60); } };
+  updTimer(); startTick(() => { A.s1.time[P.key] = (A.s1.time[P.key] || 0) + 1; updTimer(); });
+  for (const k of Object.keys(B.CLIPS)) if (document.querySelector(`[data-player="${k}"]`)) renderPlayer(k);
+}
+function refreshTabs() { document.querySelectorAll(".tab").forEach((t, i) => { const p = B.PARTS[i]; t.querySelector(".cnt").textContent = partCount(p.key) + "/" + B.ITEMS[p.key].length; }); }
+
+function viewS2() {
+  const tasks = B.WRITING.map(w => {
+    const t = A.s2.text[w.id] || ""; const tm = A.s2.time[w.id] || 0;
+    return `<section class="sheet" data-task="${w.id}"><div class="row spread"><div><span class="eyebrow">Suggested ${w.time} min · ${w.words} words</span><h2>${esc(w.title)}</h2></div></div>
+    <div class="task-text"><p>${esc(w.prompt)}</p><p style="margin-top:8px">In your ${w.id === "W1" ? "message" : "essay"}:</p><ul>${w.bullets.map(b => `<li>${esc(b)}</li>`).join("")}</ul></div>
+    <textarea rows="${w.id === "W1" ? 9 : 16}" data-write="${w.id}" spellcheck="false" autocorrect="off" autocapitalize="sentences" aria-label="${esc(w.title)}" ${A.s2.done ? "readonly" : ""}>${esc(t)}</textarea>
+    <div class="row spread"><span class="wc" data-wc="${w.id}">${words(t)} words</span><span class="wc" data-tm="${w.id}">${fmtTime(tm)} spent</span></div></section>`;
+  }).join("");
+  return `<div class="topbar"><div class="inner"><span class="eyebrow">Session 2 · Writing</span><div class="row"><span id="savestatus">${saveStatusHTML()}</span><button class="btn small ghost" data-go="home">Pause</button></div></div></div>
+  <main class="wrap"><div class="notice small">Write on your own: no translator, no AI, no spellcheck. Pasting is turned off. Your teacher needs to see your real level, mistakes included.</div>
+  ${tasks}
+  <div class="foot"><span class="muted small">Speaking is done live with your teacher.</span><div id="finishbox2">${A.s2.done ? `<span class="pill good">Submitted</span>` : `<button class="btn primary" id="finish2">Submit writing</button>`}</div></div></main>`;
+}
+let activeTask = null;
+function bindS2() {
+  startTick(() => { if (activeTask && !A.s2.done && document.hasFocus()) { A.s2.time[activeTask] = (A.s2.time[activeTask] || 0) + 1; const el = document.querySelector(`[data-tm="${activeTask}"]`); if (el) el.textContent = fmtTime(A.s2.time[activeTask]) + " spent"; } });
+}
+
+function viewDone(n) {
+  const code = enc(A);
+  return `<main class="wrap"><div class="sheet"><span class="eyebrow">Session ${n} complete</span><h1>Thanks, ${esc(A.name.split(" ").slice(-1)[0])}.</h1>
+  <p>${n === 1 ? "That's the first session done. Take a break before Session 2." : "Your writing is in. Your teacher will do the speaking part with you."}</p>
+  <div id="savestatus">${saveStatusHTML()}</div>
+  <div class="notice"><p><b>Send this code to your teacher</b>${STUDENT ? "" : " (unless she's next to you)"}. It contains your answers.</p></div>
+  <textarea class="code" readonly id="codebox">${esc(code)}</textarea>
+  <div class="row"><button class="btn primary" id="copycode">Copy code</button><span class="small muted" id="copymsg"></span></div>
+  <div class="row"><button class="btn" data-go="home">Back to start</button></div></div></main>`;
+}
+
+/* ---------- Teacher ---------- */
+let teacherOK = store.get(K_TEACH, false);
+let dbAttempts = {}; let unsubA = null; let dbLoadMsg = "";
+let sel = null; let reportTab = "report";
+function library() { return store.get(K_LIB, {}); }
+function setLibrary(lib) { store.set(K_LIB, lib); }
+function subscribeAttempts() {
+  if (!caps.db || unsubA) return;
+  dbLoadMsg = "Loading saved attempts…";
+  const timer = setTimeout(() => { dbLoadMsg = "Saved attempts can't be reached right now."; if (route() === "teacher") renderTeacherList(); }, 10000);
+  try {
+    unsubA = caps.db.collection("attempts").onSnapshot(snap => {
+      if (!snap.metadata.fromCache) { clearTimeout(timer); dbLoadMsg = ""; }
+      dbAttempts = {}; for (const d of snap.docs) { const x = d.data(); if (x && x.s1) dbAttempts[d.id] = { ...x, id: d.id }; }
+      if (route() === "teacher") { renderTeacherList(); if (sel && dbAttempts[sel] && !document.activeElement?.closest?.(".report textarea")) renderReport(); }
+    }, () => { clearTimeout(timer); dbLoadMsg = ""; renderTeacherList(); });
+  } catch { clearTimeout(timer); dbLoadMsg = ""; }
+}
+function allAttempts() {
+  const map = {};
+  for (const [id, a] of Object.entries(library())) map[id] = { a, src: "local" };
+  if (A) map[A.id] = map[A.id] || { a: A, src: "current" };
+  for (const [id, a] of Object.entries(dbAttempts)) map[id] = { a, src: "db" };
+  return Object.values(map).sort((x, y) => String(y.a.created).localeCompare(String(x.a.created)));
+}
+function getAttempt(id) { return allAttempts().find(x => x.a.id === id); }
+function mergeAttempts(base, inc) {
+  const out = JSON.parse(JSON.stringify(base));
+  if (inc.s1 && (Object.keys(inc.s1.ans || {}).length >= Object.keys(out.s1.ans || {}).length)) out.s1 = inc.s1;
+  if (inc.s2 && (words((inc.s2.text || {}).W1) + words((inc.s2.text || {}).W2)) >= (words(out.s2.text.W1) + words(out.s2.text.W2))) out.s2 = inc.s2;
+  return out;
+}
+function importCode(str) {
+  const inc = dec(str); if (!inc || !inc.s1 || !inc.name) throw new Error("bad");
+  const lib = library();
+  const match = allAttempts().find(x => x.a.id === inc.id) || allAttempts().find(x => x.a.name.trim().toLowerCase() === inc.name.trim().toLowerCase());
+  let target;
+  if (match) { target = mergeAttempts(match.a, inc); target.marks = match.a.marks || inc.marks; }
+  else target = inc;
+  target.marks ||= { W: { scores: {}, tags: [], notes: "" }, S: { scores: {}, tags: [], notes: "" } };
+  if (match && match.src === "db") persistAttempt(target, "db"); else { lib[target.id] = target; setLibrary(lib); }
+  return target.id;
+}
+let markTimer = null;
+function persistAttempt(at, src) {
+  if (src === "db" && caps.db) {
+    dbAttempts[at.id] = at; clearTimeout(markTimer);
+    markTimer = setTimeout(async () => { try { await caps.db.doc("attempts/" + at.id).set(JSON.parse(JSON.stringify(at))); flash("Marks saved"); } catch { const lib = library(); lib[at.id] = at; setLibrary(lib); flash("Saved on this device only"); } }, 800);
+  } else {
+    if (A && at.id === A.id) { A.marks = at.marks; save(); }
+    const lib = library(); lib[at.id] = at; setLibrary(lib);
+    if (caps.db && isOwner) { clearTimeout(markTimer); markTimer = setTimeout(async () => { try { await caps.db.doc("attempts/" + at.id).set(JSON.parse(JSON.stringify(at))); } catch {} }, 800); }
+    flash("Marks saved");
+  }
+}
+function flash(msg) { const el = $("#flash"); if (el) { el.textContent = msg; clearTimeout(el._t); el._t = setTimeout(() => el.textContent = "", 2000); } }
+
+function viewTeacher() {
+  if (!teacherOK && !isOwner) return `<main class="wrap"><div class="sheet"><span class="eyebrow">Teacher view</span><h2>This view shows the answers</h2>
+  <p>It has the answer key, the scoring and the marking tools. If you're taking the test, go back now.</p>
+  <div class="row"><button class="btn primary" id="iamteacher">I'm the teacher</button><button class="btn" data-go="home">Back to the test</button></div></div></main>`;
+  return `<main class="wrap wide"><div class="row spread"><div><span class="eyebrow">Teacher view</span><h1>Diagnostic report</h1></div><div class="row"><span id="flash" class="small muted" aria-live="polite"></span><button class="btn small ghost" data-go="home">Test home</button></div></div>
+  <div class="tgrid"><aside class="sheet" style="padding:16px;gap:12px"><span class="eyebrow">Attempts</span><div id="alist" class="alist"></div>
+  <details><summary class="small">Import a student's code</summary><div style="display:flex;flex-direction:column;gap:8px"><textarea id="importbox" class="code" placeholder="Paste the ELD1… code here"></textarea><button class="btn small primary" id="doimport">Import</button><span class="small muted" id="importmsg"></span>
+  <p class="small muted">Codes from Session 1 and Session 2 merge into one attempt when the name matches.</p></div></details></aside>
+  <section id="reportpane"></section></div></main>`;
+}
+function bindTeacher() { if (!teacherOK && !isOwner) return; subscribeAttempts(); renderTeacherList(); renderReport(); }
+function renderTeacherList() {
+  const el = $("#alist"); if (!el) return;
+  const list = allAttempts();
+  if (!sel && list.length) sel = list[0].a.id;
+  el.innerHTML = (dbLoadMsg ? `<span class="small muted">${esc(dbLoadMsg)}</span>` : "") + (list.length ? list.map(({ a, src }) => {
+    const n = Object.keys(a.s1?.ans || {}).length;
+    return `<button class="aitem" data-sel="${esc(a.id)}" aria-current="${a.id === sel}"><b>${esc(a.name)}</b><span class="small muted">${new Date(a.created).toLocaleDateString()} · S1 ${a.s1?.done ? "done" : n + "/" + ITEMS.length} · S2 ${a.s2?.done ? "done" : "—"}</span><span class="small muted">${src === "db" ? "Synced" : "This device"}</span></button>`;
+  }).join("") : `<p class="small muted">No attempts yet. When a student finishes on this device, or you import their code, it appears here.</p>`);
+}
+
+function renderReport() {
+  const pane = $("#reportpane"); if (!pane) return;
+  const rec = sel && getAttempt(sel);
+  if (!rec) { pane.innerHTML = `<div class="sheet"><h3>No attempt selected</h3><p class="muted">Pick an attempt on the left or import a code.</p></div>`; return; }
+  const at = rec.a; at.marks ||= { W: { scores: {}, tags: [], notes: "" }, S: { scores: {}, tags: [], notes: "" } };
+  const an = analyse(at);
+  const tabs = [["report", "Report"], ["writing", "Mark writing"], ["speaking", "Mark speaking"], ["items", "Answers"]];
+  pane.innerHTML = `<div class="report"><div class="tabs" role="tablist">${tabs.map(([k, l]) => `<button class="tab" data-rtab="${k}" aria-current="${reportTab === k}">${l}</button>`).join("")}</div>
+  ${reportTab === "report" ? reportHTML(at, an) : reportTab === "writing" ? markHTML(at, "W") : reportTab === "speaking" ? markHTML(at, "S") : itemsHTML(at, an)}</div>`;
+}
+
+function band(p) { return p >= 0.8 ? "good" : p >= 0.6 ? "warn" : "bad"; }
+function reportHTML(at, an) {
+  const skillRows = ["G", "V", "R", "L", "RW", "W", "S"].map(k => {
+    const e = an.skill[k].est; const name = B.SKILLS[k].name;
+    if (!e) return `<div class="prow"><span>${name}</span><div class="track" title="Not marked yet"><div class="bar pending"></div></div><span class="small muted">not marked</span></div>`;
+    const sk = an.skill[k];
+    const tip = sk.n ? `${name}: ${sk.c}/${sk.n} correct · estimated ${e.label}` : `${name}: rubric average · ${e.label}`;
+    return `<div class="prow"><span>${name}</span><div class="track" title="${esc(tip)}"><div class="bar" style="width:${(Math.min(e.pos, 5) / 5 * 100).toFixed(1)}%"></div></div><span class="lvl">${e.label}${e.ceiling ? '<span class="muted small"> max</span>' : ""}</span></div>`;
+  }).join("");
+  const s1n = an.answered;
+  const acad = ["G", "V", "R", "L"].map(k => an.skill[k].est.pos); const acadAvg = acad.reduce((a, b) => a + b, 0) / acad.length;
+  const rwPos = an.skill.RW.est.pos; const gap = rwPos - acadAvg;
+  const insights = [];
+  if (s1n) {
+    insights.push(Math.abs(gap) < 0.35 ? `Real-world English is roughly level with her exam English (${posLabel(rwPos)} vs ${posLabel(acadAvg)}).` :
+      gap < 0 ? `Real-world English (${posLabel(rwPos)}) is behind her exam English (${posLabel(acadAvg)}). She has learned English as a school subject more than as a living language, so idioms, tone and natural phrasing need deliberate exposure.` :
+      `Real-world English (${posLabel(rwPos)}) is ahead of her exam English (${posLabel(acadAvg)}). She picks up English from media, and her accuracy and academic skills need structured work.`);
+    if (an.sureWrong.length >= 5) insights.push(`${an.sureWrong.length} wrong answers were given <b>without</b> ticking Not sure. These are misconceptions she believes are correct, so they need re-teaching, not just more practice.`);
+    if (an.unsureRight.length >= 5) insights.push(`${an.unsureRight.length} correct answers were marked Not sure. That knowledge is fragile and may not hold under exam pressure.`);
+    if (an.unanswered) insights.push(`${an.unanswered} question${an.unanswered > 1 ? "s were" : " was"} left blank and counted as wrong.`);
+    const t = at.s1.time || {}; const slow = B.PARTS.filter(p => (t[p.key] || 0) > p.mins * 60 * 1.3).map(p => p.title.replace(/^Part \d+: /, ""));
+    if (slow.length) insights.push(`She went well over the suggested time on ${slow.join(", ")}. Speed may be part of the problem there.`);
+  }
+  const both = Object.entries(an.tags).filter(([k, v]) => v.src.size >= 2 && ([...v.src].some(s => s === "Writing" || s === "Speaking")));
+  if (both.length) insights.push(`Confirmed in both test answers and her own writing/speech: <b>${both.map(([k]) => esc(B.ERRTAGS[k]?.label || k)).join(", ")}</b>. These are the most reliable targets.`);
+
+  const prio = an.priorities.length ? an.priorities.map(p => { const s = B.SUBS[p.sub]; return `<div><div><h3>${esc(s.name)} <span class="pill ${p.score < 0.4 ? "bad" : "warn"}">${esc(B.SKILLS[s.skill].name)} · ${esc(p.detail)}</span></h3><p class="muted" style="margin-top:4px">${esc(s.fix)}</p></div></div>`; }).join("") : `<p class="muted">No sub-skill is below 67%. Look at the error patterns below for finer targets.</p>`;
+  const tags = Object.entries(an.tags).filter(([, v]) => v.n >= 2).sort((a, b) => b[1].n - a[1].n).slice(0, 8);
+  const tagRows = tags.map(([k, v]) => { const d = B.ERRTAGS[k] || { label: k, note: "" }; const qs = v.ids.map(id => "Q" + NUM[id]).join(", "); return `<tr><td><b>${esc(d.label)}</b><div class="small muted">${esc(d.note)}</div></td><td class="small">${esc([...v.src].join(", "))}${qs ? `<div class="muted">${qs}</div>` : ""}</td><td class="num">${v.n}</td></tr>`; }).join("");
+  const subRows = OBJ_SKILLS.map(k => {
+    const subs = Object.entries(an.sub).filter(([s]) => B.SUBS[s].skill === k);
+    return `<tr><th colspan="5" style="padding-top:14px">${esc(B.SKILLS[k].name)}</th></tr>` + subs.map(([s, x]) => { const p = x.c / x.n; return `<tr><td>${esc(B.SUBS[s].name)}</td><td class="num">${x.c}/${x.n}</td><td style="width:32%"><div class="mini" title="${Math.round(p * 100)}% correct"><i style="width:${p * 100}%;background:var(--${band(p)})"></i></div></td><td class="num ${"cell-" + band(p)}">${Math.round(p * 100)}%</td><td class="num small muted" title="Confident errors / lucky guesses">${x.sureWrong || "·"} / ${x.unsureRight || "·"}</td></tr>`; }).join("");
+  }).join("");
+  const lvlRows = OBJ_SKILLS.map(k => `<tr><td>${esc(B.SKILLS[k].name)}</td>${LVLS.map(L => { const x = an.skill[k].lv[L]; if (!x) return `<td class="num muted">—</td>`; const p = x.c / x.n; return `<td class="num cell-${band(p)}" title="${Math.round(p * 100)}%">${x.c}/${x.n}</td>`; }).join("")}</tr>`).join("");
+  const strengths = an.strengths.length ? an.strengths.map(s => `<span class="pill good">${esc(B.SUBS[s.sub].name)}</span>`).join(" ") : `<span class="muted small">None at 80%+ yet.</span>`;
+  const times = B.PARTS.map(p => `${esc(p.title.replace(/^Part \d+: /, ""))} ${fmtTime((at.s1.time || {})[p.key])}`).join(" · ");
+  return `<div class="sheet"><div class="headline"><div><span class="eyebrow">Overall profile</span><div class="bigl">${an.overall ? posLabel(an.overall) : "—"}</div></div>
+    <div><h2>${esc(at.name)}</h2><p class="small muted">Started ${new Date(at.created).toLocaleString()} · Session 1 ${at.s1.done ? "finished" : "in progress (" + s1n + "/" + ITEMS.length + ")"} · Session 2 ${at.s2.done ? "submitted" : "not submitted"}</p>
+    <div class="row" style="margin-top:8px"><button class="btn small" id="copyreport">Copy report as text</button><span class="small muted" id="copyrmsg"></span></div></div></div>
+    <div class="profile" aria-label="CEFR profile by skill">${skillRows}<div class="scale"><span></span><div class="ticks"><span>A1</span><span>A2</span><span>B1</span><span>B2</span><span>C1</span></div><span></span></div></div>
+    <p class="small muted">Each bar ends at her estimated level. A level counts as reached at 60% or more of its items, together with every level below it. "+" means she's close to the next level. Writing and speaking fill in once you mark them.</p></div>
+  ${insights.length ? `<div class="sheet"><span class="eyebrow">What stands out</span>${insights.map(i => `<p>${i}</p>`).join("")}</div>` : ""}
+  <div class="sheet"><span class="eyebrow">Coach these first</span><div class="prio">${prio}</div><div class="row small"><span class="muted">Strengths:</span> ${strengths}</div></div>
+  <div class="sheet"><span class="eyebrow">Error patterns</span><p class="small muted">Each wrong answer is tagged with the mistake it shows. Ticks from your writing and speaking marking count double.</p>
+    <div class="tablewrap">${tagRows ? `<table><thead><tr><th>Pattern</th><th>Seen in</th><th class="num">Count</th></tr></thead><tbody>${tagRows}</tbody></table>` : `<p class="muted small">No repeated pattern yet.</p>`}</div></div>
+  <div class="sheet"><span class="eyebrow">Sub-skills</span><div class="tablewrap"><table><thead><tr><th>Sub-skill</th><th class="num">Score</th><th></th><th class="num">%</th><th class="num" title="Confident errors / lucky guesses">Sure✗ / Unsure✓</th></tr></thead><tbody>${subRows}</tbody></table></div></div>
+  <div class="sheet"><span class="eyebrow">Where it breaks down: correct answers by item level</span><div class="tablewrap"><table><thead><tr><th>Skill</th>${LVLS.map(L => `<th class="num">${L}</th>`).join("")}</tr></thead><tbody>${lvlRows}</tbody></table></div>
+    <p class="small muted">Time per part: ${times}. Listening plays used: ${Object.keys(B.CLIPS).map((k, i) => `Clip ${i + 1} ${(at.s1.plays || {})[k] || 0}/2`).join(" · ")}.</p></div>`;
+}
+
+function itemsHTML(at, an) {
+  return B.PARTS.map(P => `<div class="sheet"><span class="eyebrow">${esc(P.title)}</span><div class="tablewrap"><table class="review"><thead><tr><th class="num">#</th><th>Question</th><th>Her answer</th><th>Correct</th><th>Tag</th></tr></thead><tbody>
+  ${an.items.filter(x => x.it.part === P.key).map(({ it, r, ok, tag, unsure }) => `<tr><td class="num">${NUM[it.id]}</td><td class="small">${esc((it.type === "err" ? it.s.replace(/\[([A-D]):([^\]]+)\]/g, "[$1 $2]") : it.q).slice(0, 110))} <span class="muted">${it.lvl}</span></td><td class="small ${ok ? "" : "wrong"}">${esc(respText(it, r))}${unsure ? ' <span class="pill warn">not sure</span>' : ""}</td><td class="small">${esc(ansText(it))}</td><td class="small muted">${tag ? esc((B.ERRTAGS[tag] || { label: tag === "UNANSWERED" ? "Blank" : tag }).label) : "✓"}</td></tr>`).join("")}
+  </tbody></table></div>${P.key === "L" ? `<details><summary class="small">Transcripts</summary>${Object.values(B.CLIPS).map(c => `<div style="margin-bottom:12px"><b class="small">${esc(c.title)}</b>${c.lines.map(l => `<p class="small"><span class="muted">${esc(l.sp)}:</span> ${esc(l.text)}</p>`).join("")}</div>`).join("")}</details>` : ""}</div>`).join("");
+}
+
+function markHTML(at, k) {
+  const m = at.marks[k];
+  const rub = B.RUBRIC[k].map(c => { const v = m.scores[c.sub]; return `<div class="rubrow"><div class="row spread"><b>${esc(c.name)}</b><span class="small muted">${v != null ? esc(B.BANDS[v]) : "not marked"}</span></div>
+    <div class="bands" role="group" aria-label="${esc(c.name)}">${c.d.map((d, i) => `<button class="band" data-score="${k}|${c.sub}|${i}" aria-pressed="${v === i}" title="${esc(d)}">${i} · ${B.BANDS[i]}</button>`).join("")}</div>
+    <p class="small muted">${v != null ? esc(c.d[v]) : esc(c.d[3]) + " ← what B1 looks like"}</p></div>`; }).join("");
+  const tags = `<div class="chips">${B.TEACHER_TAGS[k].map(t => `<button class="chip" data-tag="${k}|${t}" aria-pressed="${m.tags.includes(t)}" title="${esc(B.ERRTAGS[t].note)}">${esc(B.ERRTAGS[t].label)}</button>`).join("")}</div>`;
+  let top = "";
+  if (k === "W") {
+    top = B.WRITING.map(w => { const t = (at.s2?.text || {})[w.id] || ""; return `<div class="sheet"><div class="row spread"><div><span class="eyebrow">${esc(w.title)} · target ${w.words} words</span></div><span class="small muted">${words(t)} words · ${fmtTime((at.s2?.time || {})[w.id])}</span></div>
+      <p class="small muted">${esc(w.prompt)} The task asks her to: ${w.bullets.map(esc).join("; ")}. <i>Look for: ${esc(w.focus)}</i></p>
+      <div class="essay">${t ? esc(t) : '<span class="muted">Nothing written yet.</span>'}</div></div>`; }).join("");
+    if (caps.sample && ((at.s2?.text || {}).W1 || (at.s2?.text || {}).W2)) top += `<div class="sheet"><div class="row spread"><div><span class="eyebrow">Optional</span><h3>Get a second opinion from Claude</h3></div><button class="btn" id="aimark">Suggest marks</button></div><p class="small muted">Claude reads both texts against this rubric and suggests marks, error tags and corrected examples. You decide what to keep.</p><div id="aiout"></div></div>`;
+  } else {
+    top = `<div class="sheet"><span class="eyebrow">Speaking script · about 15 min</span><p class="small muted">Run this live (in person or on a call). Mark as you go, then adjust at the end.</p>
+    ${B.SPEAKING.map(s => `<details ${s.id === "S1" ? "open" : ""}><summary>${esc(s.title)} <span class="muted small">· ${esc(s.time)} · ${esc(s.lvl)}</span></summary><p class="small"><i>Say:</i> “${esc(s.say)}”</p><ol class="small">${s.qs.map(q => `<li>${esc(q)}</li>`).join("")}</ol><p class="small muted">Listen for: ${esc(s.listen)}</p></details>`).join("")}</div>`;
+  }
+  return `${top}<div class="sheet"><span class="eyebrow">${k === "W" ? "Writing" : "Speaking"} rubric · 0–5 per criterion (3 = B1)</span><div class="rub">${rub}</div></div>
+  <div class="sheet"><span class="eyebrow">Patterns you noticed (tick any that came up repeatedly)</span>${tags}
+  <label class="small muted" for="notes-${k}">Notes for the coaching plan</label><textarea id="notes-${k}" data-notes="${k}" rows="4" placeholder="Examples of her errors, what to target first…">${esc(m.notes || "")}</textarea></div>`;
+}
+
+async function aiMark(at) {
+  const out = $("#aiout"); out.innerHTML = `<p class="small muted">Reading her writing…</p>`;
+  const rubric = B.RUBRIC.W.map(c => `${c.sub} ${c.name}: ${c.d.map((d, i) => i + "=" + d).join(" | ")}`).join("\n");
+  const tagList = B.TEACHER_TAGS.W.map(t => `${t}: ${B.ERRTAGS[t].label}`).join("\n");
+  const prompt = `You are an experienced CEFR/IELTS examiner marking a Vietnamese learner (estimated A2–B1) for her teacher. Be honest and precise; do not inflate.
+Mark BOTH texts together on each criterion, 0–5, where 0=below A1, 1=A1, 2=A2, 3=B1, 4=B2, 5=C1+.
+Rubric:\n${rubric}
+Error tags (use only these keys; include a tag only if it appears more than once across the texts):\n${tagList}
+
+TASK 1 (${B.WRITING[0].words} words): ${B.WRITING[0].prompt} Points: ${B.WRITING[0].bullets.join("; ")}.
+TEXT 1:\n"""${(at.s2.text.W1 || "").slice(0, 3000)}"""
+
+TASK 2 (${B.WRITING[1].words} words): ${B.WRITING[1].prompt} Points: ${B.WRITING[1].bullets.join("; ")}.
+TEXT 2:\n"""${(at.s2.text.W2 || "").slice(0, 4000)}"""
+
+Reply with JSON only: {"scores":{"W-TA":n,"W-CC":n,"W-LR":n,"W-GR":n,"W-RG":n},"tags":["KEY",...],"summary":"2-3 sentences for the teacher","examples":[{"original":"exact phrase from her text","corrected":"…","tag":"KEY"}]} with 3–6 examples.`;
+  try {
+    let res;
+    try { res = await caps.sample.json(prompt, { modelTier: "default" }); }
+    catch (e) { if (e && (e.code === "not_granted" || e.code === "rate_limited")) throw e; const t = await caps.sample(prompt, { modelTier: "default" }); res = JSON.parse((t.text.match(/\{[\s\S]*\}/) || ["{}"])[0]); }
+    const sc = res.scores || {};
+    out.innerHTML = `<div class="ai"><p>${esc(res.summary || "")}</p>
+      <p class="small">${B.RUBRIC.W.map(c => `${esc(c.name)}: <b>${sc[c.sub] != null ? esc(B.BANDS[sc[c.sub]] || sc[c.sub]) : "—"}</b>`).join(" · ")}</p>
+      ${(res.tags || []).length ? `<p class="small">Patterns: ${(res.tags || []).filter(t => B.ERRTAGS[t]).map(t => esc(B.ERRTAGS[t].label)).join(", ")}</p>` : ""}
+      ${(res.examples || []).length ? `<table><thead><tr><th>She wrote</th><th>Better</th></tr></thead><tbody>${res.examples.map(x => `<tr><td class="small">${esc(x.original)}</td><td class="small">${esc(x.corrected)}</td></tr>`).join("")}</tbody></table>` : ""}
+      <div class="row"><button class="btn small primary" id="aiapply">Apply these marks and tags</button><span class="small muted">You can change any of them after.</span></div></div>`;
+    $("#aiapply").onclick = () => {
+      const rec = getAttempt(sel); const a = rec.a;
+      for (const c of B.RUBRIC.W) if (typeof sc[c.sub] === "number" && sc[c.sub] >= 0 && sc[c.sub] <= 5) a.marks.W.scores[c.sub] = Math.round(sc[c.sub]);
+      a.marks.W.tags = [...new Set([...(a.marks.W.tags || []), ...(res.tags || []).filter(t => B.TEACHER_TAGS.W.includes(t))])];
+      if (res.examples?.length && !a.marks.W.notes) a.marks.W.notes = res.examples.map(x => `${x.original} → ${x.corrected}`).join("\n");
+      persistAttempt(a, rec.src); renderReport();
+    };
+  } catch (e) {
+    if (e && e.code === "not_granted") { out.innerHTML = `<p class="small muted">Claude suggestions are turned off for this page.</p>`; return; }
+    out.innerHTML = `<p class="small muted">Couldn't get suggestions${e && e.code === "rate_limited" ? " (too many requests, try again in a minute)" : ""}. You can mark with the rubric below.</p>`;
+  }
+}
+
+function reportText(at) {
+  const an = analyse(at); const L = [];
+  L.push(`ENGLISH DIAGNOSTIC: ${at.name}`, `Overall profile: ${an.overall ? posLabel(an.overall) : "—"}`, "");
+  for (const k of ["G", "V", "R", "L", "RW", "W", "S"]) { const e = an.skill[k].est; const sk = an.skill[k]; L.push(`${B.SKILLS[k].name}: ${e ? e.label : "not marked"}${sk.n ? ` (${sk.c}/${sk.n})` : ""}`); }
+  L.push("", "COACH THESE FIRST");
+  an.priorities.forEach((p, i) => L.push(`${i + 1}. ${B.SUBS[p.sub].name} (${p.detail}): ${B.SUBS[p.sub].fix}`));
+  L.push("", "ERROR PATTERNS");
+  Object.entries(an.tags).filter(([, v]) => v.n >= 2).sort((a, b) => b[1].n - a[1].n).slice(0, 8).forEach(([k, v]) => L.push(`- ${(B.ERRTAGS[k] || { label: k }).label} ×${v.n} (${[...v.src].join(", ")})`));
+  L.push("", `Confident errors: ${an.sureWrong.length} · Lucky guesses: ${an.unsureRight.length} · Blank: ${an.unanswered}`);
+  if (at.marks.W.notes) L.push("", "Writing notes:", at.marks.W.notes);
+  if (at.marks.S.notes) L.push("", "Speaking notes:", at.marks.S.notes);
+  return L.join("\n");
+}
+async function copyText(text, msgEl) {
+  try { await navigator.clipboard.writeText(text); if (msgEl) msgEl.textContent = "Copied"; }
+  catch { if (msgEl) msgEl.textContent = "Select the text and copy it manually."; }
+}
+
+/* ---------- Events ---------- */
+document.addEventListener("click", e => {
+  const g = e.target.closest("[data-go]"); if (g) { e.preventDefault(); go(g.dataset.go); return; }
+  const pt = e.target.closest("[data-part]"); if (pt && route() === "session-1") { const i = Number(pt.dataset.part); if (i >= 0 && i < B.PARTS.length) { stopAudio(); A.s1.part = i; save(); render(); window.scrollTo(0, 0); } return; }
+  const pl = e.target.closest("[data-play]"); if (pl) { playClip(pl.dataset.play); return; }
+  if (e.target.id === "newatt") { $("#newbox").innerHTML = `<span class="small">This clears the current attempt on this device.</span> <button class="btn small" id="newyes">Clear it</button> <button class="btn small ghost" data-go="home">Keep it</button>`; return; }
+  if (e.target.id === "newyes") { if (A) { const lib = library(); lib[A.id] = A; setLibrary(lib); } A = null; store.del(K_CUR); dbStatus = "none"; render(); return; }
+  if (e.target.id === "finish1") {
+    const left = ITEMS.length - Object.keys(A.s1.ans).filter(k => A.s1.ans[k] !== "").length;
+    if (left > 0 && !e.target.dataset.sure) { e.target.dataset.sure = "1"; e.target.textContent = "Finish anyway"; $("#finishbox").insertAdjacentHTML("afterbegin", `<span class="small muted">${left} question${left > 1 ? "s are" : " is"} still blank. Use the tabs to check.</span>`); return; }
+    A.s1.done = true; A.s1.finished = new Date().toISOString(); save(); go("done-1"); return;
+  }
+  if (e.target.id === "finish2") {
+    const w1 = words(A.s2.text.W1), w2 = words(A.s2.text.W2);
+    if ((w1 < 50 || w2 < 80) && !e.target.dataset.sure) { e.target.dataset.sure = "1"; e.target.textContent = "Submit anyway"; $("#finishbox2").insertAdjacentHTML("afterbegin", `<span class="small muted">One of your texts is very short. </span>`); return; }
+    A.s2.done = true; A.s2.finished = new Date().toISOString(); save(); go("done-2"); return;
+  }
+  if (e.target.id === "copycode") { const box = $("#codebox"); box.select(); copyText(box.value, $("#copymsg")); return; }
+  if (e.target.id === "iamteacher") { teacherOK = true; store.set(K_TEACH, true); render(); return; }
+  const si = e.target.closest("[data-sel]"); if (si) { sel = si.dataset.sel; renderTeacherList(); renderReport(); return; }
+  const rt = e.target.closest("[data-rtab]"); if (rt) { reportTab = rt.dataset.rtab; renderReport(); return; }
+  if (e.target.id === "doimport") { try { sel = importCode($("#importbox").value); $("#importbox").value = ""; $("#importmsg").textContent = "Imported"; renderTeacherList(); renderReport(); } catch { $("#importmsg").textContent = "That code didn't work. Check it was copied completely, starting with ELD1."; } return; }
+  if (e.target.id === "copyreport") { const rec = getAttempt(sel); copyText(reportText(rec.a), $("#copyrmsg")); return; }
+  if (e.target.id === "aimark") { const rec = getAttempt(sel); e.target.disabled = true; aiMark(rec.a).finally(() => { const b = $("#aimark"); if (b) b.disabled = false; }); return; }
+  const sc = e.target.closest("[data-score]"); if (sc) { const [k, sub, v] = sc.dataset.score.split("|"); const rec = getAttempt(sel); const sv = Number(v); if (rec.a.marks[k].scores[sub] === sv) delete rec.a.marks[k].scores[sub]; else rec.a.marks[k].scores[sub] = sv; persistAttempt(rec.a, rec.src); renderReport(); return; }
+  const tg = e.target.closest("[data-tag]"); if (tg) { const [k, t] = tg.dataset.tag.split("|"); const rec = getAttempt(sel); const arr = rec.a.marks[k].tags; const i = arr.indexOf(t); if (i >= 0) arr.splice(i, 1); else arr.push(t); persistAttempt(rec.a, rec.src); tg.setAttribute("aria-pressed", i < 0); return; }
+});
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (t.type === "radio" && route() === "session-1") { A.s1.ans[t.name] = Number(t.value); save(); refreshTabs(); return; }
+  if (t.dataset.unsure) { if (t.checked) A.s1.unsure[t.dataset.unsure] = true; else delete A.s1.unsure[t.dataset.unsure]; save(); return; }
+});
+document.addEventListener("input", e => {
+  const t = e.target;
+  if (t.dataset.gap) { A.s1.ans[t.dataset.gap] = t.value; save(); refreshTabs(); return; }
+  if (t.dataset.write) { A.s2.text[t.dataset.write] = t.value; const wc = document.querySelector(`[data-wc="${t.dataset.write}"]`); if (wc) wc.textContent = words(t.value) + " words"; save(); return; }
+  if (t.dataset.notes) { const rec = getAttempt(sel); rec.a.marks[t.dataset.notes].notes = t.value; persistAttempt(rec.a, rec.src); return; }
+});
+document.addEventListener("focusin", e => { if (e.target.dataset && e.target.dataset.write) activeTask = e.target.dataset.write; });
+document.addEventListener("paste", e => { if (e.target.dataset && e.target.dataset.write) { e.preventDefault(); } });
+document.addEventListener("submit", e => {
+  if (e.target.id === "startform") { e.preventDefault(); const nm = $("#nm").value.trim(); if (!nm) return; A = newAttempt(nm); save(); render(); }
+});
+
+render();
+initCaps();
+</script>
+</body>
+</html>
